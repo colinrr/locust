@@ -4,28 +4,19 @@
 % =======================================================================
 % C Rowell, March 2020
 
-% ANALYSIS FOR EVENT 25B
-%(BI052500: May 25, 15:11 big bang)
+% ANALYSIS FOR EVENT 1 (18-05-25B)
+% (BI052500: May 25, 15:11 'big bang')
 % =========================== USER INPUT =============================
 % clear all; close all
 clearvars -except D V;  %close all
-disp('Initializing Event 25B...')
+disp('Project: Event 25B...')
 
-%% Build path
-addpath(genpath('plumeTracking'))
-addpath(genpath('pulseTracker'))
-addpath(genpath('preProcTools'))
-addpath(genpath('ijcv_flow_code'))
 %% ================== DATA DIRECTORIES ==================
-% addpath(genpath('pulseTracker'))
 
-% homeDir = 'D:\'; % FB
-% homeDir = 'C:\Users\crowell\';  % SLIMJIM
-homeDir = '~'; % LINUX/MAC
-dataDir   = fullfile(homeDir,'/Kahuna/data/sabancaya_5_2018/');
+setHomeDir
 
 % -------- MAIN WORKING directory for this event --------
-thermDir   = fullfile(dataDir,'image_exports/25B/');
+thermDir   = fullfile(dataDir,'/event3/');
 
 % -------- Directory of RAW .MAT files for individual frames --------
 matDir  = fullfile(thermDir,'mat-Mar20/');
@@ -34,15 +25,11 @@ headsIRT = fullfile(matDir,'params.mat');
 matHeads = fullfile(matDir,'frameHeadsFixed.mat');
 
 % -------- FIGURE OUTPUT --------
-% figdir = fullfile(dataDir,'/Calculon/thermal/';
-% figdir = fullfile(thermDir,'figures');
-figdir = fullfile(dataDir,'Saba_manuscript_data/mat-figs/');
+figdir = fullfile(dataDir,'figures/');
 
-%% ======== Image Registration (thermPixelReg) ==========
-regDir  = fullfile(thermDir,'reg-mat-Mar20/');
-regHeads = fullfile(regDir,'frameHeads.mat');
-% matHeads = regHeads; % Overwrite
-% regParams = fullfile(regDir,'registration_params_2019-07-15_n2576.mat');
+%% ======== (2) Image Registration (thermPixelReg) ==========
+regDir  = fullfile(thermDir,'reg-mat/'); % Directory to registered frames
+regHeads = fullfile(regDir,'frameHeads.mat'); % Frame header information
 regParams = fullfile(regDir,'registration_params_2020-03-23_n2575.mat');
 
 regMode = 'full';
@@ -51,28 +38,10 @@ regROI = [1 1024 705 768]; % [x1 x2 y1 y2] - Use this to register a select image
 refIdx = 7; % Index of reference frame (other frames will be transformed to this one)
 
 % Subset of frames that require registration
-% regIdx = [511:769]; 
-% regIdx = [1:20 141:161];
 regIdx = [1:6 8:2576];
-% regIdx = [1:6 8:25];
-
-
-% Testing....
-% matDir = fullfile(thermDir,'reg-test/');
-% matHeads = fullfile(matDir,'paramsFixed.mat');
-% regDir = fullfile(thermDir,'reg-mat-test/');
-% regHeads = fullfile(regDir,'frameHeads.mat');
-% bupDir = fullfile(matDir,'backup/');
-% refIdx = 510;
-% regIdx = [30:35 1011:1013];
-% regROI = [200 800 705 768];
-% regDir2  = fullfile(thermDir,'reg-mat-all/');
-% regParams2 = fullfile(regDir2,'registration_params_2020-03-15_n1929.mat');
-% regHeads2 = fullfile(regDir2,'frameHeads.mat');
 
  % Temperature range for scaling registration images. Final images are not
  % scaled, but registration needs simple grayscale image
-% regTscale = [200 419.85]; % Kelvin
 regTscale = [230 330]; % Kelvin
 
 %% ====== INITIAL PLUME CALCULATIONS (mapPixels and plumeTrackCalcs) ======
@@ -85,37 +54,24 @@ satVal = 403.1; %403.15; % Saturation brightness temp for this imagery
 
 % Distance mapping
 %           lat         lon         elev (m)
-% obsLLE = [-15.750128, -71.836807, 5123.198430]; % Camera coords
 obsLLE = [-15.750128, -71.836807, 5168]; % Camera coords, but using DEM elevation
 
-% vent   = [-15.786744, -71.855919, 5911]; % Best guess from SRTM? or GE?
 vent   = [-15.787498, -71.856122, 5919]; % New guess from alos12m DEM. Based on lowest crater point along LOS to BI explosion first jet
 hfov = 32.36; vfov=24.55;
 
-% Control point to calibrate camera azimuth/tilt
-% ref_utm = [1.943832634403001e+05 8.252621640823159e+06 5954];
-ref_utm = [194376 8252622 5954];
-% refLLE = [-15.740833, -71.852500, 5913.000000]; % Landmark coords
+% Reference point to calibrate camera azimuth/tilt
+ref_utm = [194376 8252622 5954]; 
 [refLLE(1),refLLE(2)] = utm2deg(ref_utm(1),ref_utm(2),'19 L'); refLLE(3) = ref_utm(3);
-% refPix = [693 364]; % [y x] pixel coords in ref image corresponding to refLLE
 refPix = [692 362]; % new guess from /mat-Mar20/25B_tau1_em1_0007.mat
-imsz = [768 1024]; % Raw images
+imsz = [768 1024]; % Raw image dimension
 % !!!!!!!!!!!!!!!!!!!!
-
-% DEM plots/calcs
-% demfile = fullfile(dataDir,'dem_alos/alos12m_saba_clip60x60_utmZ19.tif');
-% dem_roi = {[192500 198000],[8251500 8258000]};
-% dem_roi = {[193500 194500],[8252000 8253000]};
-% dem_roi = {[185000 205000],[8245000 8264000]};
 
 plotCalcs = true;
 plot_image_projection = false;
 
 % Camera/target positioning geometry
-% geomf = fullfile(thermDir,'geometry.mat');
-% geomf = fullfile(thermDir,'geometry_old_and_a_little_broken.mat'); % needs some fixing
-% geomf   = fullfile(thermDir,'geometry_2020-05-29.mat'); % Corrected projection
 geomf  = fullfile(thermDir,'geometry_2020-06-02_registered.mat'); % Corrected projection, adjusted for registration
+
 %% ============= PLUME TRACKER (mainTrackPlume) ==============
 % INPUT: most recent data set of: matDir, regDir, or procDir
 % -------- Plume Track OUTPUT directory --------
@@ -128,9 +84,7 @@ deb = 7; % Starting image? Need not be the same as reference image
 fin = 2578; % Leave empty to grab all files to end
 dN  = 2;    % Track every dN frames
 
-% deb = [(deb:10)';(11:dN:fin)'];
 deb = [(deb:10)';(11:dN:1121)' ;(1123:4:fin)'];
-% fixpix = [518 704]; % Fixed pixel for plume base [x y]
 fixpix = [517 698]; % New for registered images
 
 % Plotting
@@ -142,45 +96,32 @@ video = true;
 
 PTplotflags = [plume_params,png,gif,video];
 
-ptHeads = fullfile(plumeTrackDir,'plumeTrack_output.mat'); % plumeTrack Output params
+ptHeads = fullfile(regDir,'plumeTrack_output.mat'); % plumeTracker Output params
 
 polyFile = [];
 
 %% =========== THERMAL IMAGE REGRIDDING (interpThermal) ===========
-% interpDir = fullfile(thermDir,'interp-mat/');
-% interpIdx = 7:1300;
-interpIdx = 11:1300;
-% interpIdx = 7:20;
-interpIn = regDir;
+interpIdx = 11:1300; % all
+interpIdx = 11:110; % demo subset
+interpIn = regDir; % Image source directory
 
 vmax = 100; % Maximum velocity allowed in plume mask movement
 
-interpDir = fullfile(thermDir,'interp-mat-Jun20/');
+interpDir = fullfile(thermDir,'interp-mat/');
 interpHeads = fullfile(interpDir,'frameHeads.mat');
 
-% Re-gridding some reference frames for atmospheric profile estimation
-interpRefIdx  = 1099:4:2469;
-interpRefDir = fullfile(thermDir,'interp-profile-refs/');
-interpRefHeads = fullfile(interpRefDir,'frameHeads.mat');
-
-interpRefIdx2 = 19:12:2469; % To get a long time series of thermal evolution
-interpRefDir2 = fullfile(thermDir,'interp-mat-1-in-10/');
-interpRefHeads2 = fullfile(interpRefDir2,'frameHeads.mat');
-
 %% ============== THERMAL DATA CUBE SETUP (getThermCube) ================
-cubeDir = fullfile(thermDir,'thermCubeAnalysis/');
-% thermIdx = interpIdx';
-thermIdx = (11:1299)';
-% thermIdx = (11:3:1299)'; % slimmed down cube
-% thermIdx = [378:395]';
+cubeDir = fullfile(thermDir,'thermCube/');
+% thermIdx = (11:1299)';
+thermIdx = (11:110)'; % demo cube
 
-
-%  [x1 x2 y1 y2] % Must be based off INTERPOLATED IMAGES
-% ROI = [290 575 430 709]; % Original on small region below any wind
+% Image region-of-interest to crop
 ROI = [270 840 1 710]; % ALL plume up to Idx 1300
 
+% Last output therm data cube file
+thermCube   = fullfile(cubeDir,'thermStats_2020-10-26_z710_x571_t1289.mat'); % This and previous were functionally identical, just overwrote 1st by accident
 
-% Current Therm data cube file
+
 % thermFile   = fullfile(cubeDir,'thermStats_2020-03-25_z710_x571_t1294.mat'); % OLD FILE
 
 % thermCube   = fullfile(cubeDir,'thermStats_2020-06-08_z710_x571_t1289.mat');

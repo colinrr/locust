@@ -7,22 +7,15 @@
 % ANALYSIS FOR EVENT 1 (18-05-25A, sequence 4)
 %(1-180525AA-04: May 25, Continuous plume, 08:01-08:06)
 
-disp('Initializing Event 25A-4...')
+disp('Project: Event 25A-4...')
 % clear all; close all
 clearvars -except D V; close all
-
-addpath(genpath('plumeTracking'))
-addpath(genpath('pulseTracker'))
-addpath(genpath('preProcTools'))
-addpath(genpath('ijcv_flow_code'))
 
 % =========================== USER INPUT =============================
 %                             vvvvvvvvvv
 %% ================== DATA DIRECTORIES ==================
 
-homeDir = '.'; % LINUX/MAC
-dataDir   = fullfile(homeDir,'testData/');
-
+setHomeDir
 % -------- MAIN WORKING directory for this event --------
 thermDir   = fullfile(dataDir,'event1/');
 
@@ -36,12 +29,10 @@ matHeads = fullfile(matDir,'frameHeadsFixed.mat');
 figdir = fullfile(dataDir,'Saba_manuscript_data/mat-figs/');
 
 allIdx = 1:2439; % All frame indices - useful reference/plot tool
-%% ======== Image Registration (thermPixelReg) ==========
+%% ======== (2) Image Registration (thermPixelReg) ==========
 regDir  = fullfile(thermDir,'reg-mat/');
 regHeads = fullfile(regDir,'frameHeads.mat');
-% regParams = fullfile(regDir,'registration_params_2020-03-17_n1929.mat');
 regParams = fullfile(regDir,'registration_params_2020-03-23_n1929.mat');
-% regParams = fullfile(regDir,'registration_params_2020-03-15_n1929.mat');
 
 regMode = 'full';
 
@@ -54,7 +45,6 @@ regIdx = 511:2439;
 
  % Temperature range for scaling registration images. Final images are not
  % scaled, but registration needs simple grayscale image
-% regTscale = [200 419.85]; % Kelvin
 regTscale = [260 350]; % Kelvin
 
 %% ====== INITIAL PLUME CALCULATIONS (mapPixels and plumeTrackCalcs) ======
@@ -70,31 +60,23 @@ satVal = 420; % Saturation brightness temp for this imagery
 %           lat         lon         elev (m)
 obsLLE = [-15.738265, -71.84283, 5243]; % Camera coords using DEM elevation
 
-% vent   = [-15.786744, -71.855919, 5911]; % Best guess from SRTM? or GE?
 vent   = [-15.787498, -71.856122, 5919]; % New guess from alos12m DEM. Based on lowest crater point along LOS to BI explosion first jet
-% vent_utm = [1.93989e+05 8.252493e+06 5.919e+03];
 hfov = 32.36; vfov=24.55;
 
 
 % Control point to calibrate camera azimuth/tilt
 %           lat         lon         elev (m)
-% ref_utm = [1.943832634403001e+05 8.252621640823159e+06 5954];
 ref_utm = [194376 8252622 5954];
-% refLLE = [-15.740833, -71.852500, 5913.000000]; % Landmark coords
 [refLLE(1),refLLE(2)] = utm2deg(ref_utm(1),ref_utm(2),'19 L'); refLLE(3) = ref_utm(3);
 
 % Use registered images for these references IF registration was done
-% refPix = [681 295]; % [y x] pixel coords in ref image corresponding to refLLE
 refPix = [682 296];
-% imsz = [764 1020]; % Registered image size (or raw if no registration was done)
-imsz = [768 1024]; % Raw images
+imsz = [768 1024]; % Raw image dimension
 % !!!!!!!!!!!!!!!!!!!!
 
 % DEM plots/calcs
 demfile = fullfile(dataDir,'dem_alos/alos12m_saba_clip60x60_utmZ19.tif');
-% dem_roi = {[192500 198000],[8251500 8258000]};
 dem_roi = {[193500 194500],[8252000 8253000]};
-% dem_roi = {[185000 205000],[8245000 8264000]};
 
 plotCalcs = true;
 plot_image_projection = true;

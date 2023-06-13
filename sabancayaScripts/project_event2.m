@@ -17,8 +17,7 @@ addpath(genpath('preProcTools'))
 addpath(genpath('ijcv_flow_code'))
 %% ================== DATA DIRECTORIES ==================
 
-homeDir = '.'; 
-dataDir   = fullfile(homeDir,'testData/');
+setHomeDir
 
 % -------- MAIN WORKING directory for this event --------
 thermDir   = fullfile(dataDir,'event2/');

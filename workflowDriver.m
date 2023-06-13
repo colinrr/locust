@@ -1,11 +1,24 @@
-%% ================= PARAMETER INPUT ==================
+%% ================= PROJECT INPUT ==================
 
-% project_24A
-% project_24B
-% project_25A
-% project_25B
 
-addpath(genpath(codeDir))
+%---- Build path ----
+% addpath(genpath('thermImagePreprocessing'))
+% addpath(genpath('plumeTracking'))
+% addpath(genpath('sabancayaScripts'))
+% addpath(genpath('featureTracking'))
+% addpath(genpath('utils'))
+addpath(genpath('.'))
+% addpath(genpath('ijcv_flow_code')) % For optical flow toolbox
+
+% -------------------
+% - These project files set all working directories and input parameters
+% for each event -
+
+% run sabancayaScripts/project_event1
+% run sabancayaScripts/project_event2
+run sabancayaScripts/project_event3
+
+
 if ~exist(homeDir,'dir')
     error('Check project directories!')
 end
@@ -22,7 +35,7 @@ flag_poly2mask   = false;   % Apply manual polygons to plume masks
 flag_plumecalcs  = false;   % Basic H, v, A calcs for segmented plumes
 
 % ----- Data Cube Workflow: re-grid images, get thermCube, atmoProfile --------
-flag_interpTherm = false;   % Interpolate thermal images/masks to regular x,z grids
+flag_interpTherm = true;   % Interpolate thermal images/masks to regular x,z grids
 flag_thermCube   = false;   % Get thermal data cube
 flag_atmoProfile = false;    % Get atmospheric temperature profiles
 
@@ -32,7 +45,7 @@ flag_filtVelocity = false;   % Apply low-pass filter to optic flow velocities
 flag_timeAverage  = false;   % Get time-averaged plume image and profiles
 
 % ----- Data Cube Workflow: pulseTracker --------
-flag_getSource    = true;   % Run source pulse detection, get source history
+flag_getSource    = false;   % Run source pulse detection, get source history
 flag_pulseTrack   = false;  % Track detected sources.
 flag_postProcess  = false;  % Apply smoothing and pixel exclusion to tracks
 
@@ -44,15 +57,13 @@ flag_image2dem   = false;   % Project thermal images onto the DEM
 flag_riseDiag    = false;   % Plot rise diagram
 
 %% ========================== DO THE THING ==========================
-%  ------ Data conversion and registration -------
+%  ------ Image registration/stabilization -------
 if flag_pixelreg
     [regParams,regHeads] = thermPixelReg(matDir,matHeads,regTscale,regIdx,refIdx,regROI,regDir);
-%     [regParams,regHeads] = plumePixelReg(matDir,matHeads,regTscale,regIdx,refIdx,regROI,regDir2);
 end
 
 % ------ plumeTracker (mask generation), geometry and initial calcs ------
 if flag_mapPixels
-%     geom = mapPixels(obsLLE,vent,refLLE,refPix,hfov,vfov,imsz);
     [geom,geomf] = mapPixels(obsLLE,vent,refLLE,refPix,hfov,vfov,imsz,regParams,thermDir);
 end
 if flag_preProcess

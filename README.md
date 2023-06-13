@@ -6,31 +6,46 @@ This repository contains sample and test code for the unsteady feature tracking 
 
 	Rowell, Colin R., Jellinek, A. Mark, Gilchrist, Johan T., (in review) Tracking volcanic plume thermal evolution and eruption source unsteadiness in ground-based thermal imagery using spectral-clustering.
 
-This repository contains only a subset of all scripts and function used in the above manuscript. The contents focus on essential input and test data sets for the core elements of the workflow, specifically feature tracking and atmospheric profile removal. Other components of the workflow such as pre-processing will be added as needed and as time allows. The first section below, a summary of the workflow and major functions also includes information on which components of are included here. The next section after that also lists some important data and code dependencies that will be required to run certain elements of the workflow, such as the Optical Flow Analysis Toolbox (Sun et al., 2014) and sample data sets that are too large to include in this repository.
+This repository contains only a subset of all scripts and function used in the above manuscript. The contents focus on essential functions, input, and test data sets for the core elements of the workflow, specifically feature tracking and atmospheric profile removal. Other components of the workflow such as pre-processing will be added as needed and as time allows. The first section below, a summary of the workflow and major functions also includes information on which components of are included here. The next section after that also lists some important data and code dependencies that will be required to run certain elements of the workflow, such as the Optical Flow Analysis Toolbox (Sun et al., 2014) and sample data sets that are too large to include in this repository.
 
+If you have any questions, or are interested in additional components of the workflow, please don't hesitate to reach out to the corresponding authors, Dr. Colin Rowell and Prof. Mark Jellinek, at the University of British Columbia.
 
 
 =============== CONTENTS ===============
-	(1) Data availability, data and code dependencies
-	()	Summary of workflow and major functions (what's included, directory structure)
+	(1) DATA AVAILABILITY, DATA AND CODE DEPENDENCIES
+	(2) GETTING STARTED
+	()	SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS (what's included, directory structure)
 	()	Data and code dependencies
 	()	Short descriptions of core functions
 	()	Notes for using the feature tracking algorithm
 
 
-=============== DATA AVAILABILITY AND DEPENDENCIES ===============
+============== DATA AVAILABILITY, DATA AND CODE DEPENDENCIES ==============
 
-Curated test data:
+Curated demo data:
+	The demo dataset can be found at:
+		'https:'
+	It contains sample data that can be used as input for several of the key workflow steps, as given below. 
+	*NOTE: Because file sizes are large, the demo dataset contains a subset of data for a single volcanic event only, which is Event 3 of the main manuscript.The main data set listed below contains processed brightness temperature and velocity data cubes for all 3 of the events analysed in the main manuscript.
+
+	SAMPLE_DATA 		IS_INPUT_FOR_WORKFLOW_STEPS
+	event3/reg-mat/		5.1
 
 Main dataset for the manuscript:
 
+============== GETTING STARTED ==============
 
+(1) Before running anything, you'll want to open the script 'setHomeDir.m', and set the code and directories to whichever absolute or relative paths you like.
+
+(2) The project workflows are contained in 'workflowDriver.m' (for all steps up to and including feature tracking) and 'pulseTrackAnalysisDriver.m' (for all data analysis AFTER feature tracking). These and the functions called within are the main functioning scripts.
+
+(3) Any of the following workflow steps can be run immediately using the demo data provided (see DATA AVAILABILITY above). Demo data workflow currently starts at Re-gridding (see step 5.1 in the workflow below), so gridded frame files are not included in the demo data. There is however:sample temperature and velocity data cubes (output of steps 5.2 through 7) that can be used to demo run any workflow steps from 8 onwards, and sample tracking output that 
 
 =============== SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS ===============
 --> WHAT'S INCLUDED SO FAR
 
-1 - fully included and ready for use, test data included in repository
-T - included and ready for use, test data available seperately
+Y - fully included and ready for use, test data included in demoData
+T - included and ready for use, to demo data available
 ! - available, subject to dependencies
 x - not currently included
 
@@ -38,7 +53,7 @@ x	(1) 	Irbis to Matlab data conversion
 x	(2) 	Image registration (stabilization)
 x	(3) 	Image projection mapping
 x	(4) 	Plume masking (modified from plumeTracker, Bombrun et al., 2018)
-x	(5.1) 	Re-gridding image frames (x,z)
+Y	(5.1) 	Re-gridding image frames (x,z)
 x 	(5.2) 	Re-sample gridded frames 3D data cube, regularly spaced in time
 x 	(6) 	Get 2D velocity fields with Optical Flow Analysis
 x 	(7) 	Atmospheric profile fitting and removal
@@ -53,7 +68,15 @@ sabancayaScripts/
 	Contains project input/control scripts and various calculations specific to the manuscript. 
 		- "project" files are useful references for all workflow input/output. 
 		- "structureTracking" files contain input parameters used for all tracked column structures as part of the manuscript. Subsets of these are highlighted that apply to provided test data sets
-		- ""
+
+thermImagePreprocessing/
+	Core functions for all workflow steps (1)-(7)
+
+featureTracking/
+	Core functions of the feature tracking algorithm and source time-series retrieval.
+
+utils/
+	A collection of minor but useful sub-functions
 
 =============== NOTES FOR USING PULSETRACKER ALGORITHM ===============
 
