@@ -45,7 +45,7 @@ Main dataset for the manuscript:
 --> WHAT'S INCLUDED SO FAR
 
 Y - fully included and ready for use, test data included in demoData
-T - included and ready for use, to demo data available
+T - included and ready for use, no demo data available
 ! - available, subject to dependencies
 x - not currently included
 
@@ -60,7 +60,7 @@ x 	(7) 	Atmospheric profile fitting and removal
 x 	(8) 	Column source time-series retrieval
 x 	(9) 	Create time-averaged images
 x 	(10) 	Feature tracking
-x 	(11) 	Virtual source estimation and power-law fitting
+Y 	(11) 	Virtual source estimation and power-law fitting
 
 --> DIRECTORY STRUCTURE
 
