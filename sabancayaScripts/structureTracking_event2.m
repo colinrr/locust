@@ -21,7 +21,6 @@ clusterVid        = false;
 % thermSource.dataType      = 'var'; % Which field of T0 (source window thermal stats) to use for detection
 thermSource.dataType      = 'prctile'; 
 thermSource.detectionChannel = 5;
-% thermSource.prcvals          = [5 20 50 80 95];
 thermSource.prcvals          = [5 25 50 75 95];
 
 % Source and detection window parameters
@@ -52,7 +51,7 @@ triggers = {
    '2' %   142
    '3' %   205
    '4' %  252
-   '5' %  286
+   '5' %  290
 %    '6a' %  328
    '6b' %  385
    '6c' %  401
@@ -101,14 +100,6 @@ if runTracker
                 trackPar.stopTime       = 51;
 
             case '3'
-%                 % Pulse 3 - good
-%                 trackPar.iTrigger = 205;
-%                 trackPar.trackWindow = [1 20];
-%                 % trackPar.winSzRatio     = 1.5;
-%                 trackPar.minClust       = 2;
-%                 trackPar.maxClust       = 5;
-%                 trackPar.stopTime       = 80;
-
                 % Pulse 3 - good
                 trackPar.iTrigger = 205;
                 trackPar.trackWindow = [1 20];
@@ -124,7 +115,6 @@ if runTracker
                 trackPar.stopTime       = 80;
 
             case '4'
-    %             Pulse 4a - dope lil' un
                 trackPar.iTrigger = 252;
                 trackPar.trackWindow = [1 20];
                 trackPar.minClust       = 3;
@@ -132,17 +122,7 @@ if runTracker
                 trackPar.lambda         = [0.6];
                 trackPar.stopTime       = 80;
 
-            case '5'
-%    %             Pulse 4b - good
-%                 trackPar.iTrigger = 285;
-%                 trackPar.trackWindow = [1 20];
-%                 trackPar.minClust       = 3;
-%                 trackPar.maxClust       = 5;
-%                 trackPar.clusterWeights = [1 1 2   0.5   2];
-%                 trackPar.lambda         = [0.6];
-%                 trackPar.priorWeights   = [2 2 1 1];
-%                 trackPar.stopTime       = 100;
-                
+            case '5'                
                 %  Pulse 5 - proper good
                 trackPar.iTrigger = 290;
                 trackPar.trackWindow = [1 20];
@@ -154,38 +134,7 @@ if runTracker
 %                 trackPar.priorWeights   = [2 2 1 1];
                 trackPar.stopTime       = 100;
 
-            case '6a'
-                % Pulse 5a
-%                 trackPar.iTrigger = 328;
-%                 trackPar.trackWindow = [1 10];
-%                 trackPar.minClust       = 4;
-%                 trackPar.uTol           = 2;
-%                 trackPar.stopTime       = 110;
-                
-                % Pulse 5a
-                trackPar.iTrigger = 335;
-                trackPar.trackWindow = [1 10];
-                trackPar.Tpercentile    = 35;                
-                trackPar.minClust       = 2;
-                trackPar.maxClust       = 5;
-                trackPar.clusterWeights = [0.75 0.75 1   0.5   1];
-%                 trackPar.priorWeights   = [0.5 0.25 2 0.5];
-                trackPar.lambda         = 0.4;
-%                 trackPar.uTol           = 2;
-                trackPar.stopTime       = 110;
-
-            case '6b'
-%                 % Pulse 5b - loses it  t~108/110?
-%                 trackPar.iTrigger = 358;
-%                 trackPar.trackWindow = [1 10];
-%                 trackPar.minClust       = 4;
-%                 trackPar.maxClust       = 7;
-%                 trackPar.lambda         = [0.6];
-%                 trackPar.uTol           = 2;
-%                 trackPar.priorWeights   = [2 0.5 2 1];
-%                 trackPar.stopTime       = 115;
-
-                % Pulse 5b - loses it  t~108/110?
+            case '6'
                 trackPar.iTrigger = 358;
                 trackPar.trackWindow = [1 10];
                 trackPar.Tpercentile    = 35;                
@@ -196,18 +145,7 @@ if runTracker
                 trackPar.priorWeights   = [1 0.5 2 1];
                 trackPar.stopTime       = 115;
 
-            case '6c'
-                % Pulse 5c
-%                 trackPar.iTrigger = 385;
-%                 trackPar.trackWindow = [1 10];
-%     %             trackPar.minClust       = 4;
-%     %             trackPar.maxClust       = 7;
-%                 trackPar.lambda         = [0.6];
-%                 trackPar.uTol           = 2;
-%                 trackPar.priorWeights   = [2 0.5 2 1];
-%                 trackPar.stopTime       = 108;
-
-                % Pulse 5c
+            case '7'
                 trackPar.iTrigger = 385;
                 trackPar.trackWindow = [1 10];
                 trackPar.Tpercentile    = 35;                
@@ -218,21 +156,13 @@ if runTracker
                 trackPar.uTol           = 2.2;
                 trackPar.priorWeights   = [0.75 0.5 2 0.5];
                 trackPar.stopTime       = 120;
-                %5d 399 - short-lived bit...
 
-            case '7' % good
+            case '8' % good
                 trackPar.iTrigger = 492;
                 trackPar.trackWindow = [1 20];
                 trackPar.minClust       = 4;
                 trackPar.uTol           = 2;
                 trackPar.stopTime       = 142;
-
-
-            case '8' % eh iffy target
-    %             trackPar.iTrigger = 399;
-    %             trackPar.trackWindow = [1 20];
-    %             trackPar.minClust       = 4;
-    %             trackPar.stopTime       = 120;
 
         end
     %% DO THE THING
@@ -245,6 +175,8 @@ if runTracker
 end
 
 %%
+% Smooths structure boundaries between frames, cuts down on high frequency
+% noise in statistics retrieval
 if postProcessSmooth
     disp('smoothing clusters')
     loadif(ofile,'Vtrack')
@@ -264,6 +196,8 @@ if postProcessSmooth
     end
 end
 
+% This step excludes pixels from occuring in two different structures,
+% giving preference to the one occuring later in time
 if postProcessClip
     disp('clipping clusters')
     loadif(ofile,'Vtrack')

@@ -1,5 +1,7 @@
 # locust-dev
-Locally Optimized Clustering for Unsteady Structure Tracking
+
+
+LOCUST - Locally Optimized Clustering for Unsteady Structure Tracking
 
 Hi!
 This repository contains sample and test code for the unsteady feature tracking algorithm associated with the following manuscript:
@@ -14,26 +16,26 @@ If you have any questions, or are interested in additional components of the wor
 =============== CONTENTS ===============
 	(1) DATA AVAILABILITY, DATA AND CODE DEPENDENCIES
 	(2) GETTING STARTED
-	()	SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS (what's included, directory structure)
+	(3)	SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS (what's included, directory structure)
 	()	Data and code dependencies
 	()	Short descriptions of core functions
 	()	Notes for using the feature tracking algorithm
 
 
-============== DATA AVAILABILITY, DATA AND CODE DEPENDENCIES ==============
+============== (1) DATA AVAILABILITY, DATA AND CODE DEPENDENCIES ==============
 
 Curated demo data:
 	The demo dataset can be found at:
 		'https:'
 	It contains sample data that can be used as input for several of the key workflow steps, as given below. 
-	*NOTE: Because file sizes are large, the demo dataset contains a subset of data for a single volcanic event only, which is Event 3 of the main manuscript.The main data set listed below contains processed brightness temperature and velocity data cubes for all 3 of the events analysed in the main manuscript.
+	NOTE: Because file sizes are large, the demo dataset contains a subset of data for a single volcanic event only, which is Event 3 of the main manuscript.The main data set listed below contains processed brightness temperature and velocity data cubes for all 3 of the events analysed in the main manuscript.
 
 	SAMPLE_DATA 		IS_INPUT_FOR_WORKFLOW_STEPS
 	event3/reg-mat/		5.1
 
 Main dataset for the manuscript:
 
-============== GETTING STARTED ==============
+============== (2) GETTING STARTED ==============
 
 (1) Before running anything, you'll want to open the script 'setHomeDir.m', and set the code and directories to whichever absolute or relative paths you like.
 
@@ -41,7 +43,7 @@ Main dataset for the manuscript:
 
 (3) Any of the following workflow steps can be run immediately using the demo data provided (see DATA AVAILABILITY above). Demo data workflow currently starts at Re-gridding (see step 5.1 in the workflow below), so gridded frame files are not included in the demo data. There is however:sample temperature and velocity data cubes (output of steps 5.2 through 7) that can be used to demo run any workflow steps from 8 onwards, and sample tracking output that 
 
-=============== SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS ===============
+=============== (3) SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS ===============
 --> WHAT'S INCLUDED SO FAR
 
 Y - fully included and ready for use, test data included in demoData
@@ -54,7 +56,7 @@ x	(2) 	Image registration (stabilization)
 x	(3) 	Image projection mapping
 x	(4) 	Plume masking (modified from plumeTracker, Bombrun et al., 2018)
 Y	(5.1) 	Re-gridding image frames (x,z)
-x 	(5.2) 	Re-sample gridded frames 3D data cube, regularly spaced in time
+Y 	(5.2) 	Re-sample gridded frames 3D data cube, regularly spaced in time
 x 	(6) 	Get 2D velocity fields with Optical Flow Analysis
 x 	(7) 	Atmospheric profile fitting and removal
 x 	(8) 	Column source time-series retrieval

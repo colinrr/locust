@@ -122,27 +122,18 @@ ROI = [270 840 1 710]; % ALL plume up to Idx 1300
 thermCube   = fullfile(cubeDir,'thermStats_2020-10-26_z710_x571_t1289.mat'); % This and previous were functionally identical, just overwrote 1st by accident
 
 
-% thermFile   = fullfile(cubeDir,'thermStats_2020-03-25_z710_x571_t1294.mat'); % OLD FILE
-
-% thermCube   = fullfile(cubeDir,'thermStats_2020-06-08_z710_x571_t1289.mat');
-thermCube   = fullfile(cubeDir,'thermStats_2020-10-26_z710_x571_t1289.mat'); % This and previous were functionally identical, just overwrote 1st by accident
+% Full cube
+thermCube   = fullfile(cubeDir,'thermStats_2020-10-26_z710_x571_t1289.mat');
 
 % Atmo profile reference cube
 refCube  = fullfile(cubeDir,'thermStats_2020-06-08_z710_x571_t343.mat');
-% refCube  = fullfile(cubeDir,'thermStats_2020-05-22_z710_x571_t29.mat');
-% Long time series ref cube
-atmoRefCube  = fullfile(cubeDir,'thermStats_2020-06-09_z710_x571_t205.mat');
-slimCube     = fullfile(cubeDir,'thermStats_2020-06-20_z710_x571_t205.mat');
-% atmoRefCube  = fullfile(cubeDir,'thermStats_2020-06-20_z710_x571_t430.mat');
+
 
 %% === ATMOSPHERIC PROFILE CHARACTERIZATION/REMOVAL (get/fitAtmoProfile) ===
 % MODIS/AIRS files
 atmoHDF = {
             fullfile(dataDir,'MODIS_atmospheric_profiles/MYD07_L2.A2018145.1750.061.2018146174008.hdf');
-%             fullfile(dataDir,'MODIS_atmospheric_profiles/MOD07_L2.A2018145.1505.061.2018146014305.hdf');
-            fullfile(dataDir,'AIRS_atmospheric_profiles/AIRS.2018.05.25.056.L2.RetStd_IR.v6.0.31.1.G19090102252.hdf');
-%             fullfile(dataDir,'AIRS_atmospheric_profiles/AIRS.2018.05.25.056.L2.RetSup_IR.v6.0.31.1.G19090102252.hdf')
-%             fullfile(dataDir,'AIRS_atmospheric_profiles/AIRS.2018.05.26.186.L2.RetStd_IR.v6.0.31.1.G19090134728.hdf')
+%             fullfile(dataDir,'AIRS_atmospheric_profiles/AIRS.2018.05.25.056.L2.RetStd_IR.v6.0.31.1.G19090102252.hdf');
             };
         
 % atmoRefFrames = 994:50:1294;
@@ -166,43 +157,32 @@ opticPlotFrames = false;
 opticData = thermCube;
 
 % opticFlow parameters
-opticParams.Sub = []; % 3rd-dimension subscript (time) in data cube to select frames for optic flow.
-% opticParams.Sub = 290:320; % Small set for OpticFlow2O test
-opticParams.maskPad = 64; % Def=15; Algorithm will crop to field around mask, plus a pixel pad this thick
-opticParams.method = [];  % 'method' input for 'estimate_flow_interface'
-opticParams.flowParams = {}; % Additional input name-value pairs for 'estimate_flow_interface'
+opticParams.Sub         = []; % 3rd-dimension subscript (time) in data cube to select frames for optic flow.
+opticParams.maskPad     = 64; % Def=15; Algorithm will crop to field around mask, plus a pixel pad this thick
+opticParams.method      = [];  % 'method' input for 'estimate_flow_interface'
+opticParams.flowParams  = {}; % Additional input name-value pairs for 'estimate_flow_interface'
 
 % Filtering
-OFfiltlim = []; %1.2; % lowpass cutoff period (seconds)
+OFfiltlim = []; %allow default; % lowpass cutoff period (seconds)
 
 % Name out output velocity file
-% velCube = fullfile(cubeDir, 'opticFlowCNL_20-04-09_n1294.mat'); % OLD FILE
-% velCube = fullfile(cubeDir, 'opticFlowCNL_20-06-18_n1289.mat'); % Raw
 velCube = fullfile(cubeDir, 'opticFlowCNL_20-06-18_n1289_filtered.mat'); % Filtered
+
 %% ============== THERMAL SOURCE DETECTION (getThermSource) ===============
 % STA/LTA data input
 thermSource.dataType        = 'var'; % Which field of T0 (source window thermal stats) to use for detection
-% thermSource.dataType      = 'prctile'; 
 thermSource.detectionChannel = 4;
-% thermSource.prcvals          = [5 20 50 80 95];
 thermSource.prcvals         = [5 25 50 75 95];
 thermSource.satVal          = satVal;
 thermSource.removeAtmo      = true;
 
 % Source and detection window parameters
-% thermSource.trackWindowStart = 25;
-% thermSource.trackWindowHeight = 45;
-% thermSource.detectionWindowOffset = 15; % (pixels)
-% thermSource.detectionWindowHeight = 25; % (pixels)
 thermSource.trackWindowStart = 20;
 thermSource.trackWindowHeight = 25;
-% thermSource.detectionWindowOffset = 0; % (pixels)
-% thermSource.detectionWindowHeight = 25; % (pixels)
 
 
 % STA/LTA detection parameters
 detParams.taperLength   = [];
-% detParams.movMinLength  = 15;
 detParams.movMinLength  = 10;
 detParams.l_sta         = [];
 detParams.l_lta         = [];
@@ -214,11 +194,11 @@ detParams.plotflag      = true;
 thermSource.detParams = detParams;
 
 % Source detection file
-% -> source stats and final detection triggers (from
-% manual_tracking_25A4)
-% thermSourceFile = fullfile(cubeDir,'thermSource_25B_2020-10-01.mat');
 thermSourceFile = fullfile(cubeDir,'thermSource_25B_2020-10-29.mat');
 %% ============== THERMAL PULSE TRACKING (pulseTrack) ================
+
+% Structure tracking inputs are contained in the separate file:
+
 
 % NAME/VALUE Params for manual tracking
 % TrigI = 2; % Which detections from getThermSource to track (optional)

@@ -45,13 +45,6 @@ if nargin<6
 end
 if isempty(dxdz)
     dxdz = 0;
-%     dz = 0;    
-% elseif iscalar(dxdz)
-%     dx = dxdz;
-%     dz = dxdz;
-% elseif numel(dxdz==2)
-%     dx = dxdz(1);
-%     dz = dxdz(2);
 else
     assert(or(isscalar(dxdz),numel(dxdz)==2),'Input "dxdz" must be scalar or 2-element vector.')
 end
@@ -173,7 +166,6 @@ for kk = 1:N
         F(kk) = load(fullfile(matDir,T.File{num2str(Fp(kk).idx)}),'Frame');
         [Fp(kk).xpg,Fp(kk).zpg]=meshgrid(1:size(F(kk).Frame,2),1:size(F(kk).Frame,1));
         [Fp(kk).x,Fp(kk).z]=px2m(Fp(kk).xpg,Fp(kk).zpg,geom);
-%         [Frame,mask,gx,gz,dx,dz] = gridThermalFrame(Frame,mask,x,z,dx,dz,ofile);
     
         if and( use_poly, ~isempty(Fp(kk).mask) )
             % Apply manual polygons here
@@ -182,7 +174,6 @@ for kk = 1:N
 
         [Frame,mask,gx,gz,dx,dz] = gridThermalFrame(F(kk).Frame,Fp(kk).mask,Fp(kk).x,Fp(kk).z,dxdz,[]);
         
-%         if kk>=2 % Nothing to do in first mask
         if and(~isempty(mask),exist('prevMask','var'))
             % Mask smoother
             if ~isempty(vmax)
@@ -196,7 +187,6 @@ for kk = 1:N
                 intMasks = interpPTmask(prevMask,currMask,prevt,[Fint.t],Fp(kk).t);
                 for ll=1:length(Fint)
                     % Do the mask interpolations
-%                     flargh
                     mask = intMasks(:,:,ll);
                     save(Fint(ll).ofile,'mask','-append')
                 end
@@ -209,15 +199,8 @@ for kk = 1:N
         end
         
         % Interpolate missing mask
-%         tint = tr(and(tr<t(kk),tr>t(kk-1))); % 
-%         if ~isempty(int)
-%         if isempty(mask)
-%         mask = interpPTmask(mask,prevMask)
-            
-%         end
-        
+       
         if ~isempty(Fp(kk).ofile) && ~and(kk==N,isempty(mask))
-            %     fprintf('Writing %s\n',savepath)
             mask = sparse(mask);
             save(Fp(kk).ofile,'Frame','mask','gx','gz','dx','dz');
             mask = full(mask);
@@ -327,12 +310,6 @@ if and( any(prevMask(:)), any(mask(:)) )
     mask = biggestConnexComponent(mask);
 end
 
-
-% for ll=1:length(pixIdx)
-%     mask(pixIdx{ll}) = 0;
-% end
-
-% imshowpair(prevMask,mask)
 end
 
 function masks = interpPTmask(prevMask,mask,prevt,tint,t)

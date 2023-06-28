@@ -124,7 +124,7 @@ sI1.Tcurve    = 'prctile';
 sI1.trackSet  = [9:19 1:8 20:26]; %[2:19 21 23:26]; % test set
 sI1.oFile     = 'trackFitResults_v2_22-12-06'; % MAIN RESULTS SET, SABA MS
 
-% Try a better z0 estimate to fix a few wild results, combining information
+% For a few cases where appropriate, used z0 estimate combining information
 % from mask fit - THIS IS THE IMPROVED FIT TO THESE FOUR TRACKS THAT ARE USED
 sI2.desc      = 'main-subset';
 sI2.Rcurve    = 'trkCombined';     % Choice of radius measure
@@ -133,7 +133,7 @@ sI2.z0        = [];
 sI2.Tcurve    = 'prctile';
 sI2.trackSet  = [1 10 20 21]; %[2:19 21 23:26]; % test set
 sI2.oFile     = 'trackFitResults_R-trkCombined';
-tkNoOut = [12 2 20 21]; % corresponding output track numbers - COMMENT OTHER ONE BELOW
+tkNoOut = [12 2 20 21]; 
 
 % Sensitivity analysis on z0
 sI3.desc      = 'z0sensitivity';

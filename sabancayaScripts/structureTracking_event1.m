@@ -21,7 +21,6 @@ clusterVid        = false;
 % thermSource.dataType      = 'var'; % Which field of T0 (source window thermal stats) to use for detection
 thermSource.dataType      = 'prctile'; 
 thermSource.detectionChannel = 5;
-% thermSource.prcvals          = [5 20 50 80 95];
 thermSource.prcvals          = [5 25 50 75 95];
 
 % Source and detection window parameters
@@ -115,8 +114,8 @@ if runTracker
                 
 
             case '4'
-                % Not bad...incorporates following pulse but can edit in
-                % post
+                % Not bad...incorporates following pulse but can be
+                % excluded
                 trackPar.iTrigger       = 680;
                 trackPar.trackWindow    = [1 20];
                 trackPar.minClust       = 2;
@@ -242,6 +241,8 @@ if runTracker
 end
 
 %%
+% Smooths structure boundaries between frames, cuts down on high frequency
+% noise in statistics retrieval
 if postProcessSmooth
     disp('smoothing clusters')
     loadif(rawTrackFile,'Vtrack')
@@ -261,6 +262,8 @@ if postProcessSmooth
     end
 end
 
+% This step excludes pixels from occuring in two different structures,
+% giving preference to the one occuring later in time
 if postProcessClip
     disp('clipping clusters')
     loadif(rawTrackFile,'Vtrack')

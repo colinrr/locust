@@ -16,6 +16,7 @@ vidIdx = 1:901;
 
 
 runTracker        = true;
+saveOutput        = false;
 postProcessSmooth = false;
 postProcessClip   = false;
 plotResults       = true;
@@ -29,7 +30,6 @@ clusterVid        = false;
     % STA/LTA data input
     thermSource.dataType      = 'var'; % Which field of T0 (source window thermal stats) to use for detection
     thermSource.detectionChannel = 3;
-    % thermSource.prcvals          = [5 20 50 80 95];
     thermSource.prcvals          = [5 25 50 75 95];
 
     % Source and detection window parameters
@@ -61,30 +61,20 @@ clusterVid        = false;
 %        '1' %   1
 %        '2' %   1
        '3' %   90
-%        '4a' %  140
-%        '4b' %  180
-%        '5' %  328
-%        '6' %  380
-%        '5c' %  401
-%        '6' %   492
-    %    '7' %   556
+%        '4' %  140
+%        '5' %  180
+%        '6' %  328
+%        '7' %  380
     };
 
 if runTracker
     for kk=1:length(triggers)
         clear trackPar
-        trackPar.uMax           = 26.82215; % More efficient
-        trackPar.memoryN        = 9;        % More efficient
+        % These are more efficient to define manually after initial calc
+        trackPar.uMax           = 26.82215; 
+        trackPar.memoryN        = 9;        
 
-           % pulseTrack input
-            % trackPar.detectWindow = trackPar.trackWindow;
-            % trackPar.minClust       = 2; 
-            % trackPar.maxClust       = 3; %5
-            % trackPar.Tpercentile = 40;
-            % trackPar.memoryN     = 9;
-            % trackPar.lambda = 0.4;
-
-            % MANUAL INPUT SETS FOR INDIVIDUAL 25B pulses
+             % MANUAL INPUT SETS FOR INDIVIDUAL 25B pulses
             
         switch triggers{kk}
 
@@ -100,9 +90,6 @@ if runTracker
                 trackPar.stopTime       = 90;
 %                 trackPar.memoryN     = 7;
 %                 trackPar.lambda = 0.6;
-%                 trackPar.trackWindow = [105 165];
-%                 trackPar.winSzRatio = 1.3;
-%                 trackPar.priorWeights   = [0.75 0.25 3 0.5];
 
             case '2'
                 % Frame 1, second big cluster - okay performance
@@ -110,7 +97,6 @@ if runTracker
                 trackPar.trackWindow = [41 88]; %[33 72];
                 trackPar.detectWindow = trackPar.trackWindow;
                 [~,trackPar.prior.mask] = getROI(D.mask(:,:,1),'iLims',trackPar.trackWindow,'jLims',[152 190]);
-%                 trackPar.Tpercentile = 30;
 %                 trackPar.lambda = 0.6;
 %                 trackPar.priorWeights   = [0.75 0.25 2.5 0.5];
 %                 trackPar.minClust       = 2;
@@ -131,19 +117,7 @@ if runTracker
                 trackPar.winSzRatio = 1.35;
                 trackPar.stopTime = 30;
 
-            case '4a'
-%                 137
-%                 trackPar.iTrigger = 137; 
-%                 trackPar.trackWindow = [10 30];
-%                 trackPar.detectWindow = trackPar.trackWindow;
-%                 trackPar.minClust       = 4;
-%                 trackPar.maxClust       = 6; %5
-% %                 trackPar.Tpercentile = 30;
-%                 trackPar.memoryN     = 9;
-%                 trackPar.lambda = 0.2;
-% %                 trackPar.winSzRatio = 1.3;
-%                 trackPar.stopTime = 50;
-
+            case '4'
 %                 Excellent ensemble result
                 trackPar.iTrigger = 140;
                 trackPar.trackWindow = [10 25];
@@ -159,11 +133,9 @@ if runTracker
 %                 trackPar.winSzRatio = 1.3;
                 trackPar.stopTime = 50;
 
-            case '4b'
+            case '5'
                 % 180ish
                 trackPar.iTrigger = 275; %180;
-%                 trackPar.trackWindow = [10 35];
-%                 [~,trackPar.prior.mask] = getROI(D.mask(:,:,trackPar.iTrigger),'iLims',[10 35],'jLims',[199 221]);
                 trackPar.trackWindow = [30 75];
                 [~,trackPar.prior.mask] = getROI(D.mask(:,:,trackPar.iTrigger),'iLims',[42 71],'jLims',[193 232]);
                 trackPar.priorWeights   = [1.5 0.25 1.5 1]; %[1 .25 2 1]
@@ -174,7 +146,7 @@ if runTracker
 %                 trackPar.minClust = 2;
                 trackPar.stopTime = 58;
                 
-            case '5'
+            case '6'
                 % 249
                 trackPar.iTrigger = 249; 
                 trackPar.trackWindow = [1 25];
@@ -188,41 +160,18 @@ if runTracker
 %                 trackPar.lambda = 0.5;
                 trackPar.stopTime = 70;
 
-            case '6'
+            case '7'
                 % 380
                 trackPar.iTrigger = 380; 
                 trackPar.trackWindow = [1 25];
-%                 trackPar.detectWindow = trackPar.trackWindow;
                 trackPar.minClust       = 3;
                 trackPar.maxClust       = 4;
                 trackPar.Tpercentile = 60;
                 trackPar.memoryN     = 9;
                 trackPar.uTol        = 1.8;
                 trackPar.lambda = 0.5;
-%                 trackPar.clusterWeights = [0.75 0.75 2 1.25 1.5];
-%                 trackPar.winSzRatio = 1.6;
                 trackPar.stopTime = 105;
                 
-                    % Manual triggers and windows, all track
-                    % trackPar.iTrigger = [ %1 
-                                          %9
-                                        % 137
-                    %                     249 
-                    %                     380
-                    %                     ];
-
-        % trackPar.trackWindow = [
-        %                         105 165
-        %                         1 25;
-        %                         11 35;
-        %                         1  25;
-        %                         1  25
-        %                         ];
-
-
-        % frontTrack = '~/Kahuna/data/sabancaya_5_2018/image_exports/25B/thermCubeAnalysis/plumeFrontTrack_test1_25B';
-
-    %     testTrackFile = fullfile(thermDir,'pulseTrack_testPoly');
         end
         
     %% DO THE THING
@@ -230,9 +179,14 @@ if runTracker
         [Vtrack(kk),trackPars(kk)] = pulseTrack(V,D,trackPar);
     end
 
-%     save(oFile,'Vtrack','trackPars')
+    if saveOutput
+        save(oFile,'Vtrack','trackPars')
+    end
 end
 %%
+
+% Smooths structure boundaries between frames, cuts down on high frequency
+% noise in statistics retrieval
 if postProcessSmooth
     disp('smoothing clusters')
     loadif(trackFile,'Vtrack')
@@ -252,6 +206,9 @@ if postProcessSmooth
     end
 end
 
+
+% This step excludes pixels from occuring in two different structures,
+% giving preference to the one occuring later in time
 if postProcessClip
     disp('clipping clusters')
     loadif(trackFile,'Vtrack')

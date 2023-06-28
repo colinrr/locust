@@ -21,8 +21,6 @@ if nargin<6 || isempty(plotR0)
 end
 
 dataDir   = '~/Kahuna/data/sabancaya_5_2018/';  % Calculon
-% avgImgFile = fullfile(dataDir,'pulseTrack_analysis/AverageImageScalingResults.mat');
-% avgImgFile = fullfile(dataDir,'pulseTrack_analysis/AverageImageScalingResults_V2.mat');
 avgImgFile = fullfile(dataDir,'pulseTrack_analysis/AverageImageScalingResults_V3.mat');
 thermSources = fullfile(dataDir,'pulseTrack_analysis/allSources_2020-10-29_24A_25A4_25B.mat');
 avI = [1 2 3]; % Order of events?
@@ -33,13 +31,6 @@ load(thermSources)
 nd = length(dat); % Number of runs
 ne = length(events);
 
-
-% for ti = 1:nt
-%     tX(ti) = avX(evNo(ti)) + lasttx(evNo(ti));
-%     lasttx(evNo(ti)) = lasttx(evNo(ti))+1;
-% end
-% tXl = string(sIc.trackSet);
-% boundX = avX(1:2) + trksPerEvent(1:2) +0.5;
 
 %% Plotting params and settings
 % Plot track scaling results
@@ -101,10 +92,6 @@ else
 end
 
 % Y Limits for time plots
-% customyl = [avX 300
-%             avX 160
-%             avX 70];
-
 dt25 = [0 0 16.646]; % Time delay from 25B event start to video start
 customyl = [0 300
             0 160
@@ -164,9 +151,6 @@ for ei = 1:ne
 
     for ci = 1:(nc-1)
         avax(ei,ci) = tightSubplot(nr,nc,ci+1+nc*(ei-1),dx,dy,ppads,xSz,ySz);
-%         avax(ei,2) = tightSubplot(nr,nc,3+nc*(ei-1),dx,dy,ppads,xSz,ySz);
-%         avax(ei,3) = tightSubplot(nr,nc,4+nc*(ei-1),dx,dy,ppads,xSz,ySz);
-%     avax(ei,4) = tightSubplot(nr,nc,5+nc*(ei-1),dx,dy,ppads,xSz,ySz);
     end
 
     hold(avax(ei,:),'on')
@@ -174,10 +158,6 @@ for ei = 1:ne
     
 % Plot averaged image results
     if plotByTime
-%         if nc==5
-%             axes(avax(ei,1))
-%             plotLineError(AvgImgT.r0_combo(avI(ei),:).*[1;1],TavgS(avI(ei)).tSpan',tkCol2,alph)
-%         end
         axes(avax(ei,ai0+1))
         if ei==3 % Adjusting 25B plot to account for the early start time of track 1
             tspan = [dt25(ei) TavgS(avI(ei)).tSpan(2)]';
@@ -228,7 +208,6 @@ for di = 1:nd % Loop over runs
         end
         tSpan(ti,2) = tk(dat(di).in.trackSet(ti)).t(end);
         [~,evNo(ti)] = ismember(dat(di).trackFits(ti).eventName,events);
-%         [~,evNo(ti)] = ismember(tk(dat(di).in.trackSet(ti)).event,events);
     end
     trksPerEvent = zeros(1,ne);
     for ei = 1:ne
@@ -243,7 +222,6 @@ for di = 1:nd % Loop over runs
         Tqc(isnan(dat(di).fitArrays.B_nrmse(tkIdx,:)))=0;
         
         % Plot by event number
-%         tkX = tkAvX + [tk(dat(di).in.trackSet(tkIdx)).eventTrack]; % X positions for track subset
         
         % Plot by time
         if isfield(dat(di).fitArrays,'t1_srcWin')
@@ -257,31 +235,14 @@ for di = 1:nd % Loop over runs
         end
         tp{ei} = plot(tax(ei),repmat(taxxl(ei,:)',[1 length(tkX)]),(tkX.*[1 1])','--','LineWidth',lw,'Color',cot(1,:));
         
-%         if nc==5
-%             % r0
-%             axes(avax(ei,1))
-%             if any(tkIdx)
-%                 % Mean track results
-%                 meanY = yErrMu(dat(di).fitArrays.r0(tkIdx,:),dat(di).fitArrays.r_rmse(tkIdx),avgErrMode);
-% %                 [sh,eh] = plotScaleError(meanY,tkAvX+ dxs.*(di-1),mean(dat(di).fitArrays.r_rmse(tkIdx,:)),[],[],runSym{di});
-%                 %Indiviual track results
-%                 [sh,eh] = plotScaleError(dat(di).fitArrays.r0(tkIdx,:),tkX + dxs.*(di-1),dat(di).fitArrays.r_rmse(tkIdx,:),Rqc,[],runSym{di},tkCol);
-%             end
-%             if ei==ne
-%     %             title(sprintf('Event %i',ei))
-%                 caxis(rcl)
-%             end
-%         end
-        
+       
         % z0
          axes(avax(ei,ai0+1))
         if any(tkIdx)
             % Plot average of tracks
             meanY = yErrMu(dat(di).fitArrays.z0(tkIdx,:),dat(di).fitArrays.r_rmse(tkIdx),avgErrMode);
             plotLineError(meanY.*[1;1],tkX([1 end]),cot(di,:),alph,true);
-%             [sh,eh] = plotScaleError(meanY,tkAvX+ dxs.*(di-1),mean(dat(di).fitArrays.r_rmse(tkIdx,:)),[],[],runSym{di});
             % Plot track results
-%             plot(repmat(customxl(1,:)',[1 length(tkX)]),(tkX.*[1 1])','--','LineWidth',lw2,'Color',tkCol2);
             [sh,eh] = plotScaleError(dat(di).fitArrays.z0(tkIdx,:),tkX + dxs.*(di-1),dat(di).fitArrays.r_rmse(tkIdx,:),Rqc,[],runSym{di},tkCol);
         end
         if ei==ne
@@ -294,9 +255,7 @@ for di = 1:nd % Loop over runs
             % Plot average of tracks
             meanY = yErrMu(dat(di).fitArrays.drdz(tkIdx,:),dat(di).fitArrays.r_rmse(tkIdx),avgErrMode);
             plotLineError(meanY.*[1;1],tkX([1 end]),cot(di,:),alph,true);
-%             [sh,eh] = plotScaleError(meanY,tkAvX+ dxs.*(di-1),mean(dat(di).fitArrays.r_rmse(tkIdx,:)),[],[],runSym{di});
             % Plot track results
-%             plot(repmat(customxl(2,:)',[1 length(tkX)]),(tkX.*[1 1])','--','LineWidth',lw2,'Color',tkCol2);
             [sh,eh] = plotScaleError(dat(di).fitArrays.drdz(tkIdx,:),tkX + dxs.*(di-1),dat(di).fitArrays.r_rmse(tkIdx,:),Rqc,[],runSym{di},tkCol);
         end
         if ei==ne
@@ -309,9 +268,7 @@ for di = 1:nd % Loop over runs
             % Plot average of tracks
             meanY = yErrMu(dat(di).fitArrays.Bpl(tkIdx,:),dat(di).fitArrays.B_nrmse(tkIdx),avgErrMode);
             plotLineError(meanY.*[1;1],tkX([1 end]),cot(di,:),alph,true);
-%             [sh,eh] = plotScaleError(meanY,tkAvX+ dxs.*(di-1),nanmean(dat(di).fitArrays.B_nrmse(tkIdx,:)),[],[],runSym{di});
             % Plot track results
-%             plot(repmat(customxl(3,:)',[1 length(tkX)]),(tkX.*[1 1])','--','LineWidth',lw2,'Color',tkCol2);
             [sh,eh] = plotScaleError(dat(di).fitArrays.Bpl(tkIdx,:),tkX + dxs.*(di-1),dat(di).fitArrays.B_nrmse(tkIdx,:),Tqc,[],runSym{di},tkCol);
         end
         if ei==ne
@@ -320,21 +277,16 @@ for di = 1:nd % Loop over runs
         
         
         % Ticks & labels
-%         tkYtick{ei} = union(tkYtick{ei},[avX; tkAvX; tkX]);
         tkYtick{ei} = union(tkYtick{ei},[tkX]);
-%         tkXtick{ei} = union(tkXtick{ei},dat(di).in.trackSet(tkIdx)); % Overall track No.
         tkYtickL{ei} = union(tkYtickL{ei},[tk(dat(di).in.trackSet(tkIdx)).eventTrack]); % Within-event track No.
-%         xl(ei,:,di) = 
     end
 end
 
 for ei=1:ne
     set(avax(ei,1:(nc-2)),'YTickLabel',[])
     set(avax(ei,1:(nc-1)),'YTick',tkYtick{ei},'YLim',[0.5 tkYtick{ei}(end)+0.5],'FontSize',fs)
-%     ytl = [{"Track" "Average"}; string(tkYtickL{ei})];
     ytl = string(tkYtickL{ei});
     set(avax(ei,nc-1),'YTickLabel',ytl) %,'YAxisLocation','right')
-%     set(avax(ei,nc-1),'YTickLabel',[])
     for ai = 1:(nc-1)
         colormap(avax(ei,ai),cmap)
     end
@@ -364,7 +316,6 @@ set(avax(:,nc-2),'XTick',drTick)
 set(avax(:,nc-1),'YAxisLocation','right','XTick',BTick)
 set(avax,'YDir','reverse')
 set(avax(1:(ne-1),:),'XTickLabel',[])
-% xlim(avax(4,:),[-5 0.5])
 if nc==5
     xlabel(avax(ne,1),'$r_0$ (m)','Interpreter','Latex')
 end
@@ -380,7 +331,7 @@ dp(1) = plot(nan,nan,'Color',tkCol2,'LineWidth',lw);
 dp(2) = plot(nan,nan,'Color',cot(1,:),'LineWidth',lw);
 [dp(3),~] = plotScaleError([nan nan nan],nan,0,1,gca,'s',tkCol);
 % Track
-% Poor track?
+% Poor track QC?
 if ~overlaysOff
     legend(avax(1),dp,{'Time-average','Track Average','Track Result'},'Position',lpos,'Interpreter','Latex')
 end

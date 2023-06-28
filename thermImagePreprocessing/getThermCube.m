@@ -88,8 +88,6 @@ elseif and(isnumeric(geomf),numel(geomf)==1)
 else
     error('Geom input not recognized.')
 end
-% error('flargh: Dev. note: Make sure geom information and Z0 are properly implemented next time you run this')
-% Probably also requires properly fixing mapPixels and geom output
 
 load(param)
 
@@ -112,9 +110,6 @@ sig = 5.67e-8;
 D.matDir = inputDir;
 
 if exist('geom','var')
-%     D.refLLE = geom.refLLE;
-%     D.obsLLE = geom.obsLLE;
-%     D.targetLLE = geom.targetLLE;
     D.geom = geom;
 end
 D.z0ASL = geom.Ztarg;
@@ -249,42 +244,7 @@ for ii=1:size(D.mask,3)
 end
 % POSSIBLY use regionprops to fill any holes
 
-%% Calculate gradients, maxima, normalizations, etc
-% disp('Calculating secondary data fields...')
-
-% Un-comment items below to add them into the routine if desired
-
-
-
-% D.Amask = sparse(D.Amask);
-% D.Tmax = squeeze(max(D.T,[],2)); % Max temp across x
-% D.Tmax = [];
-
-% Fast integration approach, requires interpolated images-----
-% Raw integration
-% D.Tint = squeeze(trapz(D.x,D.T,2)); % Temp integrated across x
-% D.Tint = [];
-
-% ----- Temperature Gradient (+ x integration) ------
-% [~,~,D.dT] = gradient(D.T,D.x,D.z,D.t_orig);
-% D.dTint = squeeze(trapz(D.x,D.dT,2));
-
-% ---- Using simple diff -----
-% dA = diff(D.A,1,3);
-% dAint = squeeze(trapz(D.x,dA,2));
-% -------------------------------
-
-% ---- Try converting to effective at-sensor radiance ------
-% D.I = sig*D.T.^4;
-% D.I = [];
-% [~,~,D.dI] = gradient(D.I,D.x,D.z,D.t_orig); % Gradient of radiance
-
-% Horizontal integrations
-% D.Iint = squeeze(trapz(D.x,D.I,2)); % Integrated radiance
-% D.Iint = [];
-% D.dIint = squeeze(trapz(D.x,D.dI,2)); % Integrated gradient of radiance
-% D.Aint = D.Aint-D.Aint(:,1); % Subtract reference integration
-
+%% Saving
 
 if and(~isempty(odir),exist(odir,'dir'))
     ofile = sprintf('thermStats_%s_z%i_x%i_t%i',datestr(now,'YYYY-mm-dd'),Mz,Nx,Ot);

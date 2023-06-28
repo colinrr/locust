@@ -11,6 +11,8 @@ addpath(genpath('.'))
 % addpath(genpath('ijcv_flow_code')) % For optical flow toolbox
 
 % -------------------
+
+% ==== SELECT PROJECT =====
 % - These project files set all working directories and input parameters
 % for each event -
 
