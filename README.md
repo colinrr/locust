@@ -29,8 +29,11 @@ Curated demo data:
 	It contains sample data that can be used as input for several of the key workflow steps, as given below. 
 	NOTE: Because file sizes are large, the demo dataset contains a subset of data for a single volcanic event only, which is Event 3 of the main manuscript.The main data set listed below contains processed brightness temperature and velocity data cubes for all 3 of the events analysed in the main manuscript.
 
-	SAMPLE_DATA 		IS_INPUT_FOR_WORKFLOW_STEPS
+	SAMPLE_DATA 		HAS_INPUT_FOR_WORKFLOW_STEPS
 	event3/reg-mat/		5.1
+	event3/interp-mat/  5.2
+	event3/thermCube/   6 - 10
+	pulseTrackAnalysis/ 11
 
 Main dataset for the manuscript:
 
