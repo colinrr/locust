@@ -73,9 +73,13 @@ function [Vtrack,param] = trackStructure(V,D,varargin)
 %               update.
 %           --> Implemented a very light mask smoothing step in
 %               restrictivePriorWarp to eliminate outlier pixels
+%
+% 1.2   Manuscript final version.
+
+fprintf('\n========= Thermal Structure Tracking =========\n')
 
 clear textprogressbar
-qcPlot = true;
+% param.qcPlot = true;
 %% PARSE
     % Get tracker
     param = loadPulseTrackInput(varargin{:});
@@ -328,7 +332,7 @@ for kk=1:Nsources
                 trkPar0 = trkPar;
                 trkPar0.clusterMode = 'eig';
                 trkPar0.maxClust = min([trkPar0.maxClust 12]); % 12 is a realistic max
-                S = pickVelocities(Tj,maskj,Wj,Uj,D.x,D.z,trkPar0);
+                S = getCluster(Tj,maskj,Wj,Uj,D.x,D.z,trkPar0);
 
                 [subI,subJ]  = ind2sub(size(maskj),S.trackedIdx);
                 iExtent0 = range(subI);
@@ -490,25 +494,29 @@ for kk=1:Nsources
         Vtrack(kk).jCenter(jj)   = mean(subJ);
         Vtrack(kk).clustZ(jj)   = (Vtrack(kk).iCenter(jj)-1)*D.dz+D.z(1); % Cluster tracked Z position (approx leading edge)
 
-        if trackMaskTop
-            nextROI = getROI(D.mask(:,:,(jj)+param.iTrigger(kk)),'iLims',[trkPar.zI(1) length(D.z)]);
-                     
-            % Alt xI lims setting for track window
-            diffJ = nextROI(3:4)' - Vtrack(kk).xI(:,jj);
-            diffJsign = sign(diffJ);
-            diffJ = min(abs([diffJ growthSpeed.*[1;1]]),[],2).*diffJsign;
-            Vtrack(kk).xI(:,jj+1) = Vtrack(kk).xI(:,jj) + diffJ;
-            
-            targetIsz = (diff(Vtrack(kk).xI(:,jj+1))+1).*winAspect;
-            
-            Isz = diff(Vtrack(kk).zI(:,jj))+1;
-            diffIsign = sign(targetIsz - (diff(Vtrack(kk).zI(:,jj))+1));
-            diffIsz = diffIsign.*round(min(abs([growthSpeed targetIsz - (diff(Vtrack(kk).zI(:,jj))+1)])));
-            
-            Vtrack(kk).zI(:,jj+1) = [nextROI(2)-(Isz + diffIsz)+1;...
-                                     nextROI(2)];
-            dzI = round(trkPar.zI - Vtrack.iCenter(jj));
-            dxI = round(trkPar.xI - Vtrack.jCenter(jj));
+        if trackMaskTop 
+            if jj<Vtrack(kk).N
+
+                nextROI = getROI(D.mask(:,:,(jj)+param.iTrigger(kk)),'iLims',[trkPar.zI(1) length(D.z)]);
+
+                % Alt xI lims setting for track window
+                diffJ = nextROI(3:4)' - Vtrack(kk).xI(:,jj);
+                diffJsign = sign(diffJ);
+                diffJ = min(abs([diffJ growthSpeed.*[1;1]]),[],2).*diffJsign;
+                Vtrack(kk).xI(:,jj+1) = Vtrack(kk).xI(:,jj) + diffJ;
+
+                targetIsz = (diff(Vtrack(kk).xI(:,jj+1))+1).*winAspect;
+
+                Isz = diff(Vtrack(kk).zI(:,jj))+1;
+                diffIsign = sign(targetIsz - (diff(Vtrack(kk).zI(:,jj))+1));
+                diffIsz = diffIsign.*round(min(abs([growthSpeed targetIsz - (diff(Vtrack(kk).zI(:,jj))+1)])));
+
+                Vtrack(kk).zI(:,jj+1) = [nextROI(2)-(Isz + diffIsz)+1;...
+                                         nextROI(2)];
+                dzI = round(trkPar.zI - Vtrack.iCenter(jj));
+                dxI = round(trkPar.xI - Vtrack.jCenter(jj));
+
+            end
                                  
         else
             nextiCenter  = max(subIwarp);
@@ -557,19 +565,21 @@ for kk=1:Nsources
             Vtrack(kk).zI(:,jj+1) = round(Vtrack(kk).iCenter(jj) + diSign.*diCenter) + dzI;
             Vtrack(kk).xI(:,jj+1) = round(Vtrack(kk).jCenter(jj) + djSign.*djCenter) + dxI;
         end
-        % Check for frame edges
-        Vtrack(kk).zI(Vtrack(kk).zI(:,jj+1)<1,jj+1) = 1;
-        Vtrack(kk).zI(Vtrack(kk).zI(:,jj+1)>Mf,jj+1) = Mf;
-        Vtrack(kk).xI(Vtrack(kk).xI(:,jj+1)<1,jj+1) = 1;
-        Vtrack(kk).xI(Vtrack(kk).xI(:,jj+1)>Nf,jj+1) = Nf;
         
+        if jj ~= Vtrack(kk).N
+            % Check for frame edges
+            Vtrack(kk).zI(Vtrack(kk).zI(:,jj+1)<1,jj+1) = 1;
+            Vtrack(kk).zI(Vtrack(kk).zI(:,jj+1)>Mf,jj+1) = Mf;
+            Vtrack(kk).xI(Vtrack(kk).xI(:,jj+1)<1,jj+1) = 1;
+            Vtrack(kk).xI(Vtrack(kk).xI(:,jj+1)>Nf,jj+1) = Nf;
+        end
         % POSSIBLY BACKTRACK TO PREVIOUS FRAME TO GET FEATURE INITIAL EVOLUTION?
         
  %%       
 
 %% Temporary plotting for QC'ing the process
 
-    if qcPlot
+    if param.qcPlot
         if jj==1
             tempFig = figure('position',[200 100 1000 1000]);
         end
@@ -608,10 +618,10 @@ for kk=1:Nsources
         
         % QC stop - manually pick and index to stop at or add a dbstop.
         % Comment out otherwise for now
-        if jj>=70
-            disp('Flargh!')
-%             fprintf('%s\n',mat2str(dzI))
-        end
+%         if jj>=70
+%             disp('Flargh!')
+% %             fprintf('%s\n',mat2str(dzI))
+%         end
         
 %% Stopping conditions
 

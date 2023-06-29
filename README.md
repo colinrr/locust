@@ -1,12 +1,11 @@
-# locust-dev
+# locust
 
-
-LOCUST - Locally Optimized Clustering for Unsteady Structure Tracking
+Locally Optimized Clustering for Unsteady Structure Tracking
 
 Hi!
 This repository contains sample and test code for the unsteady feature tracking algorithm associated with the following manuscript:
 
-	Rowell, Colin R., Jellinek, A. Mark, Gilchrist, Johan T., (in review) Tracking volcanic plume thermal evolution and eruption source unsteadiness in ground-based thermal imagery using spectral-clustering.
+	Rowell, Colin R., Jellinek, A. Mark, Gilchrist, Johan T., (in review) Tracking eruption column thermal evolution and source unsteadiness in ground-based thermal imagery using spectral-clustering.
 
 This repository contains only a subset of all scripts and function used in the above manuscript. The contents focus on essential functions, input, and test data sets for the core elements of the workflow, specifically feature tracking and atmospheric profile removal. Other components of the workflow such as pre-processing will be added as needed and as time allows. The first section below, a summary of the workflow and major functions also includes information on which components of are included here. The next section after that also lists some important data and code dependencies that will be required to run certain elements of the workflow, such as the Optical Flow Analysis Toolbox (Sun et al., 2014) and sample data sets that are too large to include in this repository.
 
@@ -27,7 +26,7 @@ Curated demo data:
 	The demo dataset can be found at:
 		'https:'
 	It contains sample data that can be used as input for several of the key workflow steps, as given below. 
-	NOTE: Because file sizes are large, the demo dataset contains a subset of data for a single volcanic event only, which is Event 3 of the main manuscript.The main data set listed below contains processed brightness temperature and velocity data cubes for all 3 of the events analysed in the main manuscript.
+	NOTE: Because file sizes are large, the demo dataset contains a small subset of data for a single volcanic event only, which is Event 3 of the main manuscript. The main data set listed below contains processed brightness temperature and velocity data cubes for all 3 of the events analysed in the main manuscript.
 
 	SAMPLE_DATA 		HAS_INPUT_FOR_WORKFLOW_STEPS
 	event3/reg-mat/		5.1
@@ -35,7 +34,7 @@ Curated demo data:
 	event3/thermCube/   6 - 10
 	pulseTrackAnalysis/ 11
 
-Main dataset for the manuscript:
+Main dataset for the manuscript at: https://doi.org/10.6084/m9.figshare.21936582
 
 ============== (2) GETTING STARTED ==============
 
@@ -43,13 +42,14 @@ Main dataset for the manuscript:
 
 (2) The project workflows are contained in 'workflowDriver.m' (for all steps up to and including feature tracking) and 'pulseTrackAnalysisDriver.m' (for all data analysis AFTER feature tracking). These and the functions called within are the main functioning scripts.
 
-(3) Any of the following workflow steps can be run immediately using the demo data provided (see DATA AVAILABILITY above). Demo data workflow currently starts at Re-gridding (see step 5.1 in the workflow below), so gridded frame files are not included in the demo data. There is however:sample temperature and velocity data cubes (output of steps 5.2 through 7) that can be used to demo run any workflow steps from 8 onwards, and sample tracking output that 
+(3) Some of the workflow steps can be run immediately using the demo data provided (see DATA AVAILABILITY above). Demo data workflow currently starts at Re-gridding (see step 5.1 in the workflow below), so gridded frame files are not included in the demo data. There is however:sample temperature and velocity data cubes (output of steps 5.2 through 7) that can be used to demo run any workflow steps from 8 onwards. Compiled tracking output used for final data analysis is also available.
 
 =============== (3) SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS ===============
 --> WHAT'S INCLUDED SO FAR
 
+
 Y - fully included and ready for use, test data included in demoData
-T - included and ready for use, no demo data yet available
+T - included and ready for use, demo data not available
 ! - available, subject to dependencies
 x - not currently included
 
@@ -59,11 +59,11 @@ x	(3) 	Image projection mapping
 x	(4) 	Plume masking (modified from plumeTracker, Bombrun et al., 2018)
 Y	(5.1) 	Re-gridding image frames (x,z)
 Y 	(5.2) 	Re-sample gridded frames 3D data cube, regularly spaced in time
-x 	(6) 	Get 2D velocity fields with Optical Flow Analysis
-x 	(7) 	Atmospheric profile fitting and removal
+T 	(6) 	Atmospheric profile fitting and removal
+! 	(7) 	Get 2D velocity fields with Optical Flow Analysis
 x 	(8) 	Column source time-series retrieval
 x 	(9) 	Create time-averaged images
-T 	(10) 	Feature tracking
+Y 	(10) 	Feature tracking
 Y 	(11) 	Virtual source estimation and power-law fitting
 
 --> DIRECTORY STRUCTURE
@@ -75,15 +75,25 @@ sabancayaScripts/
 
 thermImagePreprocessing/
 	Core functions for all workflow steps (1)-(7)
+		interpThermal.m 		Re-grid thermal images using pixel projection
+		getThermCube.m 			Build 3D image data cube
+		thermOpticFlow20.m 		Run optical flow analysis, requires Sun et al., (2014) toolbox
+		filterVelocities.m 		Apply low pass filter to velocity fields for time-smoothing
+		getAtmoProfile.m    	Retrieve atmo profile from satellite .hdf files
+		fitAtmoProfile.m    	Estimate parameter fits and produce an atmospheric profile for applying to thermal cube data
+		removeAtmoProfile.m 	Get Delta T from T_b thermal cube
 
 featureTracking/
 	Core functions of the feature tracking algorithm and source time-series retrieval.
+		trackStructure.m 		Main function for running a single structure track
+		loadPulseTrackInput.m  	Input parameter parsing for structure tracking
+		getCluster.m 			The core clustering function, which performs tracking at each time step
 
 trackDataAnalysis/
 	Scripts for analysis of tracked structures
 
 utils/
-	A collection of minor but useful sub-functions
+	A collection of useful sub-functions
 
 plot-tools/
    Various functions for plotting processing outputs
@@ -92,7 +102,7 @@ plot-tools/
 
 Parameters 'memoryN' and 'uMax' are automatically calculated (and reported in command line output) when running pulseTracker, but the process is somewhat slow. If running the tracker repeatedly to test tracks, it is best to specify these two values as input after their initial calculation in order skip calculation time in succeeding runs.
 
-COMMON ISSUES WITH pulseTrack
+COMMON ISSUES WITH Structure Tracking
 
 The tracked cluster grows too large to encompass more than the feature of interest.
 	-> Try increasing any of 'Tpercentile', 'minClust','maxClust', or slightly reducing 'uTol','winSzRatio'

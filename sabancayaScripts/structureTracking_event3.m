@@ -59,7 +59,7 @@ clusterVid        = false;
     % Key events and trigger frames
     triggers = {
 %        '1' %   1
-%        '2' %   1
+       '2' %   1
        '3' %   90
 %        '4' %  140
 %        '5' %  180
@@ -73,7 +73,8 @@ if runTracker
         % These are more efficient to define manually after initial calc
         trackPar.uMax           = 26.82215; 
         trackPar.memoryN        = 9;        
-
+        trackPar.qcPlot         = false;
+        
              % MANUAL INPUT SETS FOR INDIVIDUAL 25B pulses
             
         switch triggers{kk}
@@ -176,7 +177,7 @@ if runTracker
         
     %% DO THE THING
     
-        [Vtrack(kk),trackPars(kk)] = pulseTrack(V,D,trackPar);
+        [Vtrack(kk),trackPars(kk)] = trackStructure(V,D,trackPar);
     end
 
     if saveOutput
@@ -238,7 +239,7 @@ end
 if plotResults
 
 
-    plotRiseDiagram(D.z,D.t,D.T,'mask',D.mask,'colormap',bone(200),'tracks',Vtrack,'atmo',D.atmo)
+    plotRiseDiagram(D.z,D.t,D.T,'mask',D.mask,'colormap',bone(200),'tracks',Vtrack) %,'atmo',D.atmo)
     caxis([-5 100])
 
     

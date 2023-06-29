@@ -2,8 +2,6 @@
 loadif(velCube,'V')
 loadif(thermCube,'D')
 
-% figdir = '/Users/crrowell/Kahuna/phd-docs/group-stuff/my-talks/aug-13-2020/';
-
 
 vidName = 'trackedClusters_25A4_smoothed'; % Video output
 FR = 10;

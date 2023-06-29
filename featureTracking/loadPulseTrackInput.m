@@ -121,6 +121,7 @@ function param = loadPulseTrackInput(varargin)
     stopTime       = [];
     stopHeight     = [];
     applyAtmo      = true;
+    qcplot         = false;
     
 %% Parse input
     p = inputParser;
@@ -151,6 +152,7 @@ function param = loadPulseTrackInput(varargin)
     addParameter(p,'stopTime',stopTime)
     addParameter(p,'stopHeight',stopHeight)  
     addParameter(p,'applyAtmo',applyAtmo)
+    addParameter(p,'qcPlot',qcplot)
 %     addParameter(p,'',)
     parse(p,varargin{:})
     

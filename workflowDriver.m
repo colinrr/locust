@@ -26,6 +26,9 @@ if ~exist(homeDir,'dir')
 end
 
 %% ================= DRIVER SWITCHES AND WORKFLOW ==================
+% FLIP the switches below to run different elements of the workflow, and
+% don't forget to check the plotting routines down at the bottom.
+
 %  ------ Data conversion and registration -------
 flag_pixelreg    = false;  % Register thermal images (correct shaking etc)
 
@@ -37,7 +40,7 @@ flag_poly2mask   = false;   % Apply manual polygons to plume masks
 flag_plumecalcs  = false;   % Basic H, v, A calcs for segmented plumes
 
 % ----- Data Cube Workflow: re-grid images, get thermCube, atmoProfile --------
-flag_interpTherm = true;   % Interpolate thermal images/masks to regular x,z grids
+flag_interpTherm = false;   % Interpolate thermal images/masks to regular x,z grids
 flag_thermCube   = false;   % Get thermal data cube
 flag_atmoProfile = false;    % Get atmospheric temperature profiles
 
@@ -48,7 +51,7 @@ flag_timeAverage  = false;   % Get time-averaged plume image and profiles
 
 % ----- Data Cube Workflow: pulseTracker --------
 flag_getSource    = false;   % Run source pulse detection, get source history
-flag_pulseTrack   = false;  % Track detected sources.
+flag_pulseTrack   = true;  % Track detected sources.
 flag_postProcess  = false;  % Apply smoothing and pixel exclusion to tracks
 
 % ---- Analysis ----
@@ -86,8 +89,8 @@ end
 % ----- Data Cube Workflow: re-grid images, get thermCube, atmoProfile --------
 if flag_interpTherm
     % Re-grid main image sequence
-%     interpThermal(interpIn,interpDir,{matHeads,ptHeads},geomf,interpIdx,[],vmax,polyFile)
     interpThermal(interpIn,interpDir,{regHeads,ptHeads},geomf,interpIdx,[],vmax,polyFile)
+    
     % Re-grid reference images for atmospheric profile retreival
 %     interpThermal(interpIn,interpRefDir,{regHeads,ptHeads},geomf,interpRefIdx,[],vmax,polyFile)
     % Long, decimated time series
@@ -95,18 +98,13 @@ if flag_interpTherm
 end
 if flag_thermCube
     [D,thermCube] = getThermCube(interpDir,interpHeads,geomf,thermIdx,ROI,cubeDir);
-%     plotThermStats
-
-    % For atmospheric profile reference frames
-%     [Dref,thermRefFile] = getThermCube(interpRefDir,interpRefHeads,geomf,interpRefIdx,ROI,cubeDir);
-    % For long decimated time series
-%     [Dref2,thermRefFile2] = getThermCube(interpRefDir2,interpRefHeads2,geomf,interpRefIdx2,ROI,cubeDir);
 end
 if flag_atmoProfile
     % PART 1 - retrieve satellite profiles and get initial fit
 %      [atmo,atmoFile] = getAtmoProfile(atmoHDF,vent(1:2),localTimezoneOffset); % Viewing atmo profiles only
+
       % Comparing w/ thermal data
-    [atmo,initialStats,atmoFile] = getAtmoProfile(atmoHDF,vent(1:2),localTimezoneOffset,atmoRefCube,atmoRefFrames,atmoTthresh); % Comparing w/ thermal data, no save
+%     [atmo,initialStats,atmoFile] = getAtmoProfile(atmoHDF,vent(1:2),localTimezoneOffset,atmoRefCube,atmoRefFrames,atmoTthresh); % Comparing w/ thermal data, no save
 %     [atmo,initialStats,atmoFile] = getAtmoProfile(atmoHDF,vent(1:2),localTimezoneOffset,atmoRefCube,atmoRefFrames,atmoTthresh,thermDir); % Comparing w/ thermal data, save output
 
     % PART 2 - run final profile fit on filtered data
@@ -117,8 +115,6 @@ end
 
 % ----- Data Cube Workflow: velocimetry --------
 if flag_opticFlow
-%     [V] = thermFarneback(velVid, vidParFile, FBparams, opticPlotFrames);
-%     [V] = thermOpticFlow(opticData, opticParams, 'opticFlowCNL');
     [V,velCube] = thermOpticFlow2O(thermCube, opticParams, 'opticFlowCNL');
 end
 if flag_filtVelocity
@@ -146,13 +142,17 @@ end
 if flag_pulseTrack
     loadif(velCube,'V')
     loadif(thermCube,'D')
-    % using getThermSource triggers
-%     Vpos = pulseTrack(V,D,'iTrig',S.iTrig(TrigI,1),'trackWindow',S.trackWindow,...
-%         'detectWindow',S.detectWindow,'Tpercentile',Tpercentile,'lambda',lambda);
-    % Manual triggers
-%     Vpos = pulseTrack(V,D,'iTrig',manualTrig,'trackWindow',trackWin,...
-%         'detectWindow',detWin,'Tpercentile',Tpercentile,'lambda',lambda);
-    Vpos = pulseTrack(V,D,trackPar);
+    
+    % -----
+    % Structure tracking can be run directly from here using the project_event
+    % scripts, but in practice was run separetely using the
+    % "sabancayaScripts/structureTracking" scripts below.
+%     [Vpos,trackPar] = trackStructure(V,D,varargin{:}); 
+
+%     run sabancayaScripts/structure_Tracking_event1
+%     run sabancayaScripts/structure_Tracking_event2
+    run sabancayaScripts/structureTracking_event3
+    % -----
 end
 if flag_postProcess
     loadif(thermCube,'D')
@@ -177,44 +177,43 @@ end
 
 %--------------- Data conversion and registration ---------------- 
 % > Playthrough of .mat frames for quick viewing
-% playFrames(matDir,matHeads,15,[375:2:600],[],[400 762 100 500],[230 330])
-% playFrames(regDir,regHeads,1,[1:15],[],[],[230 400])
-% playFrames(matDir,matHeads,15,allIdx(1:15:end),[],[],[230 400])
-% playFrames(regDir,regHeads,15,allIdx(1:5:end),[],[],[230 400])
-% playFrames(regDir2,regHeads2,0.5,[509 800 2000],[],[400 762 100 500],[230 300])
-% regFrameDiff(matDir,matHeads,regDir,regHeads,regROI,refIdx)
-% [700:790 1020:1140]
+% playFrames(regDir,regHeads,15,interpIdx(1:5:end),[],[],[230 400])  % Registered frames
+% playFrames(interpDir,interpHeads,15,interpIdx(1:5:end),[],[],[230 400]) % Registered and re-gridded frames
 
 % > Calculate mean or max difference between pixels in an roi for all frames
 % > in 'idx'. Useful to show which frames may need registration.
 % load(regParams)
-% [Fmean,Fmax,didx]=regFrameDiff(matDir,matHeads,[]); % Post-registered
-% [Fmean,Fmax,didx]=regFrameDiff(matDir,matHeads,regDir,regHeads,R.newROI);
-% [Fmean,Fmax,didx]=regFrameDiff(matDir,matHeads,regDir2,regHeads2,newRegROI);
+% [Fmean,Fmax,didx]=regFrameDiff(matDir,matHeads,[]); % Pre-registered
+% [Fmean,Fmax,didx]=regFrameDiff(matDir,matHeads,regDir,regHeads,R.newROI); % Compare pre- and post-registered
 
 %------- plumeTracker (mask generation), geometry and initial calcs -------
-% plotImageMap(geom) % Plot image projection
+% -- Plot image projection---
+% load(geomf)
+% plotImageMap(geom) 
+
+% -- Plot image projection with sample image---
 % load(geomf)
 % load(regHeads) % Get ref image for plotImageMap
-% plotImageMap(geom, fullfile(regDir,T.File{num2str(refIdx)}))
-% playFrames(interpDir,interpHeads,15,interpIdx,[],[],[230 350],true)
+% plotImageMap(geom, fullfile(regDir,T.File{num2str(interpIdx(1))}))
 % '-> ALSO VIEW VIDEO/IMAGE OUTPUT in plumeTracker dir (usually plumeTrackDir)
 
 % ------ Check interpolated or plumeTrack frames with masks ------
-% playFrames(interpDir,interpHeads,15,interpIdx,[],[],[230 350],true)
 % vv Compare a frame projection pre- and post- re-gridding in interpTherm vv
-% frameProjectionPair({regDir;regHeads},geomf,{interpDir;interpHeads},[],refIdx,'stack')
-% frameProjectionPair({regDir;regHeads},geomf,{interpDir;interpHeads},[],650,'mesh')
-
-% loadif(thermFile,'D');
-% loadif(velCube,'V');
+% frameProjectionPair({regDir;regHeads},geomf,{interpDir;interpHeads},[],interpIdx(1),'stack')
 
 % ------ Check thermCube output (getThermCube) -------
+% loadif(thermCube,'D');
+% loadif(velCube,'V');
+% figure
 % plotThermVelocities(D.x,D.z,[],[],'Mask',D.mask,'idx',round(linspace(1,length(D.t),50)),'Thermal',D.T)
 
 % ------ Check optical flow output (thermOpticFlow) -------
-% plotThermVelocities(V.x,V.z,V.Vx,V.Vz,'Mask',D.mask(:,:,1:end-1),'idx',[],'Vmax',20)
-% plotThermVelocities(V.x,V.z,V.Vx,V.Vz,'Mask',D.mask,'idx',1:20:1100,'Vmax',20,'Thermal',D.T)
+% loadif(thermCube,'D');
+% loadif(velCube,'V');
+% plotThermVelocities(V.x,V.z,V.Vx,V.Vz,'Mask',D.mask,'idx',[],'Vmax',20,'roi',[100 1500 -500 600])  % Velocity only
+% plotThermVelocities(V.x,V.z,V.Vx,V.Vz,'Mask',D.mask,'idx',[],'Vmax',20,'Thermal',D.T,'roi',[100 1500 -500 600])  % Velocity and thermal
+
+
 
 % ------ Check thermal source history output (getThermSource) ------
 % -- > Plot temperature statistics for a retrieved source history (from
@@ -228,13 +227,3 @@ end
 % plotRiseDiagram(D.z,D.t,D.T,'detections',S) % Basic
 % plotRiseDiagram(D.z,D.t,D.T,'mask',D.mask,'atmo',D.atmo,'detections',S) 
 
-% > View individual frames, comparing thermal, velocities, statistics, and
-% dectection and tracking parameters
-
-
- %--> Show frame corresponding to source detection
-% trigger = 2;
-% plotCheckOpticFlow(D,V,S.iTrig(trigger,1),trackParams)
-
-
-% plotThermStats

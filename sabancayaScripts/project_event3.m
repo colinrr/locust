@@ -112,18 +112,17 @@ interpHeads = fullfile(interpDir,'frameHeads.mat');
 
 %% ============== THERMAL DATA CUBE SETUP (getThermCube) ================
 cubeDir = fullfile(thermDir,'thermCube/');
-% thermIdx = (11:1299)';
-thermIdx = (11:110)'; % demo cube
+% thermIdx = (11:1299)'; % Full cube
+thermIdx = (11:109)'; % Demo cube
 
 % Image region-of-interest to crop
 ROI = [270 840 1 710]; % ALL plume up to Idx 1300
 
-% Last output therm data cube file
-thermCube   = fullfile(cubeDir,'thermStats_2020-10-26_z710_x571_t1289.mat'); % This and previous were functionally identical, just overwrote 1st by accident
-
-
 % Full cube
-thermCube   = fullfile(cubeDir,'thermStats_2020-10-26_z710_x571_t1289.mat');
+% thermCube   = fullfile(cubeDir,'thermStats_2020-10-26_z710_x571_t1289.mat');
+% Demo cube
+thermCube   = fullfile(cubeDir,'thermStats_2023-06-29_z710_x571_t99.mat');
+
 
 % Atmo profile reference cube
 refCube  = fullfile(cubeDir,'thermStats_2020-06-08_z710_x571_t343.mat');
@@ -136,10 +135,7 @@ atmoHDF = {
 %             fullfile(dataDir,'AIRS_atmospheric_profiles/AIRS.2018.05.25.056.L2.RetStd_IR.v6.0.31.1.G19090102252.hdf');
             };
         
-% atmoRefFrames = 994:50:1294;
 atmoRefFrames = 167:205;
-% atmoRefzI     = [];
-% atmoRefzI     = 140:710; % Cut out values below 500m - too much variation from vent effects
 atmoTthresh     = 235;           % Use a temperature threshold to assist mask clipping
 atmoImgROI      = [140 710 1 571];
 localTimezoneOffset = -5;
@@ -166,7 +162,8 @@ opticParams.flowParams  = {}; % Additional input name-value pairs for 'estimate_
 OFfiltlim = []; %allow default; % lowpass cutoff period (seconds)
 
 % Name out output velocity file
-velCube = fullfile(cubeDir, 'opticFlowCNL_20-06-18_n1289_filtered.mat'); % Filtered
+% velCube = fullfile(cubeDir, 'opticFlowCNL_20-06-18_n1289_filtered.mat'); % Filtered full cube
+velCube = fullfile(cubeDir, 'opticFlowCNL_20-06-18_n99_filtered.mat'); % Cropped demo cube
 
 %% ============== THERMAL SOURCE DETECTION (getThermSource) ===============
 % STA/LTA data input
@@ -225,6 +222,5 @@ avgImg = fullfile(cubeDir,'tAvg_25B_allLargePulses_2022-07-16.mat');
 
 % pickVelocityTesting
 % run sandbox_scripts/pulseTrack_ensemble
-% manual_detections_25B
 
 % vidGenerator
