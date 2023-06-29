@@ -17,9 +17,8 @@ If you have any questions, or are interested in additional components of the wor
 	(1) DATA AVAILABILITY, DATA AND CODE DEPENDENCIES
 	(2) GETTING STARTED
 	(3)	SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS (what's included, directory structure)
-	()	Data and code dependencies
-	()	Short descriptions of core functions
-	()	Notes for using the feature tracking algorithm
+	(4)	Notes for using the feature tracking algorithm
+	(coming)  Short descriptions of core functions
 
 
 ============== (1) DATA AVAILABILITY, DATA AND CODE DEPENDENCIES ==============
@@ -47,7 +46,7 @@ Main dataset for the manuscript:
 --> WHAT'S INCLUDED SO FAR
 
 Y - fully included and ready for use, test data included in demoData
-T - included and ready for use, no demo data available
+T - included and ready for use, no demo data yet available
 ! - available, subject to dependencies
 x - not currently included
 
@@ -61,7 +60,7 @@ x 	(6) 	Get 2D velocity fields with Optical Flow Analysis
 x 	(7) 	Atmospheric profile fitting and removal
 x 	(8) 	Column source time-series retrieval
 x 	(9) 	Create time-averaged images
-x 	(10) 	Feature tracking
+T 	(10) 	Feature tracking
 Y 	(11) 	Virtual source estimation and power-law fitting
 
 --> DIRECTORY STRUCTURE
@@ -77,8 +76,14 @@ thermImagePreprocessing/
 featureTracking/
 	Core functions of the feature tracking algorithm and source time-series retrieval.
 
+trackDataAnalysis/
+	Scripts for analysis of tracked structures
+
 utils/
 	A collection of minor but useful sub-functions
+
+plot-tools/
+   Various functions for plotting processing outputs
 
 =============== NOTES FOR USING PULSETRACKER ALGORITHM ===============
 
