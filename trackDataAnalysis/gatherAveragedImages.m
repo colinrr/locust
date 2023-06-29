@@ -2,16 +2,6 @@
 clear all; close all
 
 dDir = '~/Kahuna/data/sabancaya_5_2018/image_exports/';
-% dDir = 'C:\Users\crowell\Kahuna\data\sabancaya_5_2018\image_exports\';
-% avgImgFiles = {fullfile(dDir,'24A/thermCubeAnalysis/tAvg_24A_quasiSteady_2021-01-10.mat')
-%                fullfile(dDir,'25A-4/thermCubeAnalysis/tAvg_25A4_steady_2021-01-10.mat')
-%                fullfile(dDir,'25B/thermCubeAnalysis/tAvg_25B_allLargePulses_2021-01-10.mat')};
-% avgImgFiles = {fullfile(dDir,'25B/thermCubeAnalysis/tAvg_25B_allLargePulses_2022-07-07.mat')
-%                fullfile(dDir,'24A/thermCubeAnalysis/tAvg_24A_quasiSteady_2022-07-07.mat')
-%                fullfile(dDir,'25A-4/thermCubeAnalysis/tAvg_25A4_steady_2022-07-07.mat')
-%                fullfile(dDir,'25B/thermCubeAnalysis/tAvg_25B_all_t0-87_2022-07-07.mat')
-%                fullfile(dDir,'25B/thermCubeAnalysis/tAvg_25B_decay_t27-85_2022-07-07.mat')
-%                 };
 avgImgFiles = {
                fullfile(dDir,'25A-4/thermCubeAnalysis/tAvg_25A4_steady_2022-07-16.mat')
                fullfile(dDir,'24A/thermCubeAnalysis/tAvg_24A_quasiSteady_2022-07-16.mat')
@@ -26,8 +16,6 @@ desc   = {'25A-4 Steady','24A Quasi-Steady Period','25B Large Pulses','25B Full 
 % added on because I was too dumb to do it before
 timeSpans = {[0 308.25],[47.08 150.00],[0 54.33],[0 84.73],[0 26.66],[32.22 84.73]}; 
 
-% oFile = '~/Kahuna/data/sabancaya_5_2018/pulseTrack_analysis/eventAveragedImages_2022-07-12.mat';
-% oFile = 'C:\Users\crowell\Kahuna\data\sabancaya_5_2018\pulseTrack_analysis\eventAveragedImages_2022-07-16.mat';
 oFile = 'C:\Users\crowell\Kahuna\data\sabancaya_5_2018\pulseTrack_analysis\eventAveragedImages_2022-11-02.mat';
 
 gatherImgs = true;

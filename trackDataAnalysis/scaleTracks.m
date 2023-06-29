@@ -174,17 +174,6 @@ else
     Tqc = ones(length(opts.trackSet),1);
 end
 
-% R z limit
-% if ~isempty(opts.RzLim)
-%     assert( or(size(opts.RzLim,1)==Ntracks0 , size(opts.RzLim,1)==length(opts.trackSet)),'1st dimension of Z Limits must match length of tk struct or trackSet')
-% %     assert(size(opts.RzLim==2),'Numeric RzLim must have 2 columns');
-%     if size(opts.RzLim,1)==Ntracks0 && size(opts.RzLim,1)~=length(opts.trackSet)
-%         opts.RzLim = opts.RzLim(opts.trackSet,:);
-%     end
-%     useRzLim = true;
-% else
-%     useRzLim = false;
-% end
 
 % T index
 if ~isempty(opts.Tidx)
@@ -197,16 +186,6 @@ else
     useTidx = false;
 end
 
-% T z limit
-% if ~isempty(opts.TzLim)
-%     assert( or(size(opts.TzLim,1)==Ntracks0 , size(opts.TzLim,1)==length(opts.trackSet)),'1st dimension of Z Limits must match length of tk struct or trackSet')
-%     if size(opts.TzLim,1)==Ntracks0 && size(opts.TzLim,1)~=length(opts.trackSet)
-%         opts.TzLim = opts.TzLim(opts.trackSet,:);
-%     end
-%     useTzLim = true;
-% else
-%     useTzLim = false;
-% end
 
 % Manual Z0 parsing
 if ~isempty(opts.z0)
@@ -251,15 +230,12 @@ for kk=Ntracks:-1:1
 
     
     % Get full R curve
-%     [zR,R] = getRcurve(tk(kk),opts.Rcurve,[],zLims{kk},'z');
     [zR,R,sf,ff] = getRcurve(tk(kk),opts.Rcurve); %,[],[],'z');
     
     % Parse R indices/z limits and apply filter thresholds
     ixfilt = false(length(zR),2);
-%     sffilt = and(sf<=opts.satFracThresh, ff<=opts.filtFracThresh);
     sffilt =  ff<=opts.filtFracThresh; % Don't need saturation filtering for r values
     if ~useRidx && ~opts.useRzLim
-%         RidxAll = [];
         ixfilt(:,1:2) = true;
     else
         if useRidx
@@ -270,30 +246,21 @@ for kk=Ntracks:-1:1
                 Ridxk = opts.Ridx(kk,:);
                 if isnan(Ridxk(1)); Ridxk(1) = 1; end
                 if isnan(Ridxk(2)); Ridxk(2) = length(R); end
-%                 Ridxk = Ridxk(1):Ridxk(2);
                 ixfilt(Ridxk(1):Ridxk(2),1) = true;
             end
-%         else
-%             Ridxk = [];
-%             ixfilt(1:end,1) = true;
         end
         
         if opts.useRzLim
             RzIdxk = opts.RzLim(kk,:);
             if isnan(RzIdxk(1)); RzIdxk(1) = min(zR); end
             if isnan(RzIdxk(2)); RzIdxk(2) = max(zR); end
-%             RzIdxk = find(and( zR>=min(RzIdxk) , zR<=max(RzIdxk) ));
             ixfilt(:,2) = and( zR>=min(RzIdxk) , zR<=max(RzIdxk) );
-%         else
-%             RzIdxk = [];
-%             ixfilt(:,2) = true;
         else
             RzIdxk = [];
         end  
         
         ixfilt = any(ixfilt,2) & sffilt;
         RidxAll = find( (any(ixfilt,2) & sffilt) );
-%         RidxAll = rmmissing(union(Ridxk, RzIdxk));
     end
     
     % ------- (2) get dr/dz and z0 -------- 
@@ -352,7 +319,6 @@ for kk=Ntracks:-1:1
     ixfilt = false(length(zT),2);
     sffilt = and(sf<=opts.satFracThresh, ff<=opts.filtFracThresh);
     if ~useTidx && ~opts.useTzLim
-%         TidxAll = [];
         ixfilt(:,1:2) = true;
     else
         if useTidx
@@ -366,23 +332,15 @@ for kk=Ntracks:-1:1
 %                 Tidxk = Tidxk(1):Tidxk(2);
                 ixfilt(Tidxk(1):Tidxk(2),1) = true;
             end
-%         else
-% %             Tidxk = [];
-%             ixfilt(1:end,1) = true;
         end
         
         if opts.useTzLim
             TzIdxk = opts.TzLim(kk,:);
             if isnan(TzIdxk(1)); TzIdxk(1) = min(zT); end
             if isnan(TzIdxk(2)); TzIdxk(2) = max(zT); end
-%             TzIdxk = find(and( zT>=min(TzIdxk) , zT<=max(TzIdxk) ));
             ixfilt(:,2) = and( zT>=min(TzIdxk) , zT<=max(TzIdxk) );
-%         else
-% %             TzIdxk = [];
-%             ixfilt(1:end,2) = true;
         end  
         
-%         TidxAll = rmmissing(union(Tidxk, TzIdxk));
         ixfilt  = any(ixfilt,2) & sffilt;
         TidxAll = find(ixfilt);
     end
@@ -404,14 +362,12 @@ for kk=Ntracks:-1:1
                 fprintf(' --> Missing B value: %s-%i\n',tk(kk).event,tk(kk).eventTrack)
                 Tqc(kk)=0;
             end
-%         case 'George1977'
     end
 
     
     % report/output opts (curves, idx , etc), zR,R,zT,T (full track versions),rStats,Bfit
     drdzci = rStats.Rmdl.coefCI(.01);
     
-%     trackFits(kk).eventNo   = [];
     trackFits(kk).eventName = tk(kk).event;
     trackFits(kk).trackNo   = tk(kk).eventTrack;
     trackFits(kk).Rqc       = Rqc(kk);
@@ -442,70 +398,8 @@ for kk=Ntracks:-1:1
     else
         fitArrays.B_nrmse(kk)   = trackFits(kk).Bfit.gof{2}.rmse;
     end
-    %     fitArrays.Bfs(kk,:)     = trackFits(kk).Bfit.BfSrch1;    % T vs. z^b search fit
-%     fitArrays.Blm(kk,:)     = trackFits(kk).Bfit.Blm;        % Linear model fit
 end
 
 
 
-    
-% switch opts.Rcurve
-%     case 'npx'
-%         R = sqrt(tk(kk).npx./pi).*mean(diff(tk(kk).dat.plumeImg.z));
-%     case 'plumeWidth'
-%     case 'trackWidth'
-%     case 'Tgauss'
-%     case 'TkGauss'
-%     case 'Vgauss'
-%     case 'combined'
-% end
-
-% end
-
-% Check for nulls/defaults - do this track by track though once curves are
-% defined
-% defIdxCheck = or(isnan(opts.Tidx),opts.Tidx==0);
-% opts.Tidx(defIdxCheck(:,1),1) = 1;
-% %     opts.Tidx(defIdxCheck(:,3),3) = 1;
-% for ii=1:size(opts.Tidx,1)
-%     if defIdxCheck(ii,2); opts.Tidx(ii,2) = length(tk(ii).Istats.z); end
-% %         if defIdxCheck(ii,4); tkIndices(ii,4) = length(tk(ii).Istats.Tz); end
-% end
-
-
-%% Run scaling
-
-%     if nargin<4
-%         sensitivityFlag = [];
-%     end
-%     if nargin<4 || isempty(Tindices)
-%         tkIndices = [];
-%     end
-%     if nargin<2
-%         tkIdx = [];
-%     end
-%     if ischar(tk)
-%         load(tk)
-%     end
-% 
-%     if ~isempty(trackSet)
-%         tk = tk(trackSet);
-%     end
-%     
-%     if isempty(tkIndices)
-%         tkIndices = zeros(length(tk),4);
-%     end  
-
-    
-
-%     dispstat('','init')
-%     for ii=1:Ntracks
-%         dispstat(sprintf('Track %i/%i',ii,Ntracks))
-        
-        
-        % (2) get dr/dz and z0
-        
-        % (3) get B value
-%         tk(ii).Istats = scaleFromImg(tk(ii).Istats,tkIndices(ii,:),sensitivityFlag);
-%     end
 end

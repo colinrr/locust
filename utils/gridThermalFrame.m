@@ -74,67 +74,7 @@ end
 if sign(dx)~=sign_dx; dx = -dx; end
 if sign(dz)~=sign_dz; dz = -dz; end
 
-%% flargh -------
-% if and(dx==0,dz==0)
-%     dx = diff(x,1,2); dx = round(median(dx(:))/roundVal)*roundVal;
-%     dz = dx;
-% 
-% if and(isempty(dx),isempty(dz))
-%     isotropic = false;
-%     dx = diff(x,1,2); dx = round(median(dx(:))/roundVal)*roundVal;
-%     dz = diff(z,1,1); dz = round(median(dz(:))/roundVal)*roundVal;
-%     
-% elseif xor(isempty(dx),isempty(dz))
-%     isotropic=true;
-% elseif dx==dz
-%     isotropic = true;
-% else
-%     isotropic = false;
-% end    
-% 
-% if     isempty(dx)
-%     if dz==0
-%         dz = diff(z,1,1); dz = round(median(dz(:))/roundVal)*roundVal;
-%     else
-%         dz = round(dz./roundVal).*roundVal;
-%     end
-%     dx = dz;
-% elseif isempty(dz); dz = dx;
-% 
-% end
-% flarghing -------
-%     if dx==0; isotropic=true; else; isotropic=false; end
-% elseif dz==dz
-%     isotropic=true;
-% else
-%     isotropic = false;
-% end
-
-% --> default to median values for whole frame, which should be
-% consistent for all frames
-% --> Further, for good spectral, velocity analysis (etc), makes sense to
-% make dx=dz in most cases.
-% if isempty(dx)
-%     dx = diff(x,1,2); dx = round(median(dx(:))/roundVal)*roundVal;
-% end
-% if isempty(dz)
-%     dz = diff(z,1,1); dz = round(median(dz(:))/roundVal)*roundVal;
-% end
-
-
-% if isotropic  
-%     sign_dx = sign(dx);
-%     sign_dz = sign(dz);
-%     new_dx = round(mean(abs([dx dz]))./roundVal).*roundVal;
-%     dx = new_dx*sign_dx;
-%     dz = new_dx*sign_dz;
-% end
-
-% if or(dz==0,dx==dz)
-%     isotropic = true;
-% else
-%     isotropic = false;
-% end
+%
 
 %%
 % get extents for interpolation and new pixel sizes

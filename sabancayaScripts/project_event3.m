@@ -198,41 +198,7 @@ thermSourceFile = fullfile(cubeDir,'thermSource_25B_2020-10-29.mat');
 %% ============== THERMAL PULSE TRACKING (pulseTrack) ================
 
 % Structure tracking inputs are contained in the separate file:
-
-
-% NAME/VALUE Params for manual tracking
-% TrigI = 2; % Which detections from getThermSource to track (optional)
-% trackPar.Tpercentile = 40;
-% trackPar.lambda = 0.4;
-
-% trackPar.iTrig = iTrig(2:4,1);
-% trackPar.iTrigger       = 160;
-% trackPar.iTrigger       = 140;
-% trackPar.trackWindow    = [thermSource.trackWindowStart thermSource.trackWindowHeight];
-% trackPar.detectWindow   = [trackPar.trackWindow(1)+thermSource.detectionWindowOffset thermSource.detectionWindowHeight];
-% trackPar.detectWindow   = [16 25];
-% trackPar.trackWindow    = trackPar.detectWindow;
-% trackPar.minClust       = 4;
-% trackPar.maxClust       = 6;
-trackPar.uMax           = 26.82215; % More efficient
-trackPar.memoryN        = 9;        % More efficient
-% trackPar.clusterMode    = 'restrictive';
-
-% Specified for testing purposes
-% trackPar.clusterWeights = [1 1 2   1   1.5];
-% trackPar.priorWeights   = [0.5 0.25 2 0.5];
-% trackPar.uTol           = 2.5;
-
-% Pulse Tracking parameters
-% trackParams.detectionWindowOffset = 25; % (pixels)
-% trackParams.detectionWindowHeight = 15; % (pixels)
-% trackParams.trackWindowStart = 1;
-% trackParams.trackWindowHeight = 40;
-% trackParams.Tpercentile             = 70;
-% trackParams.Gpercentile              = 90;
-
-% detection_plotflag  = true; % Plot detection results
-% filter_plotflag     = true; % Plot pre- and post-filter velocity w/ spectra
+% sabancayaScripts/structureTracking_event3
 
 % Output track files
 rawTrackFile = fullfile(cubeDir,'v2Tracks/Vtracks_25B_raw.mat');
@@ -241,47 +207,20 @@ trackFile    = fullfile(cubeDir,'v2Tracks/Vtracks_25B_processed.mat');
 allTrackFile = fullfile(dataDir,'allTracks_24A_25A4_25B.mat');
 
 %% ============== Time Averaged Images (getAveragedImage) ================
-% avgROI = [1 450 1 392];
-% avgROI = [1 312 1 392]; % First 1000 meters
-% avgROI = [1 243 1 392]; % First 800 meters
 avgROI = [];
 
 % Frame indices to use for generating averaged image
-% avgIdx = 244:840; % First clearance of 1000 m onward to almost fully decayed
-% avgIdx = 155:840; % First clearance of 800 m onward to almost fully decayed
-
 % Main emissions stage (~0-26.7 s)
 avgIdx = 1:265; 
 avgROI = [1 450 1 392];
 avgImg = fullfile(cubeDir,'tAvg_25B_early_t0-27_2022-11-02.mat');
 
-% --- Decaying regime () (26.7-84.7 s)
-% avgIdx = 320:2:840; 
-% avgROI = [1 450 1 392];
-% % avgImg = fullfile(cubeDir,'tAvg_25B_decay_t27-85_2022-07-07.mat');
-% avgImg = fullfile(cubeDir,'tAvg_25B_decay_t27-85_2022-07-16.mat');
-
-% --- Full history (~ 0 - 84.7 s)
-% avgIdx = 1:2:840; 
-% avgROI = [1 450 1 392];
-% % avgImg = fullfile(cubeDir,'tAvg_25B_all_t0-87_2022-07-07.mat');
-% avgImg = fullfile(cubeDir,'tAvg_25B_all_t0-87_2022-07-16.mat');
-
-% --- All significant pulses (~ 0 - 55 s)
-% avgIdx = 1:2:540; 
-% avgROI = [1 450 1 392];
-% avgImg = fullfile(cubeDir,'tAvg_25B_allLargePulses_2022-07-07.mat');
-% avgImg = fullfile(cubeDir,'tAvg_25B_allLargePulses_2022-07-16.mat');
-
 
 avgWinHeight = 20; % Used for smoothing retrieved height tracks
-% avgWinOver   = 20; % No longer used
 
-% avgImg = fullfile(cubeDir,'tAvg_25B_initialPulse.mat');
-% avgImg = fullfile(cubeDir,'tAvg_25B_allLargePulses.mat');
-% avgImg = fullfile(cubeDir,'tAvg_25B_allLargePulses_2021-01-10.mat');
+avgImg = fullfile(cubeDir,'tAvg_25B_allLargePulses_2022-07-16.mat');
 
-%% RUN pulseTracker
+%% RUN pulseTracker from here, optionally
 % pulseTrackDriver
 
 % pickVelocityTesting

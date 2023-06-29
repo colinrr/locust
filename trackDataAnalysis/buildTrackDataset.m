@@ -1,24 +1,6 @@
 function [tk,allTrkPar]=buildTrackDataset(tk,thermCubes,velCubes,tracks,errThresh,winLengths,oDir)
 %
 %
-%
-%% Test input
-% clearvars -except D
-% close all
-
-% dataDir   = '~/Kahuna/data/sabancaya_5_2018/';
-% tkFile           = fullfile(dataDir,'pulseTrack_analysis/allTracks_2020-10-29_24A_25A4_25B.mat');
-% 
-% thermCubes = {
-%     fullfile(dataDir,'image_exports/24A/thermCubeAnalysis/thermStats_2020-06-29_z644_x578_t1195_revCorr.mat');
-%     fullfile(dataDir,'image_exports/25A-4/thermCubeAnalysis/thermStats_2020-07-20_z704_x624_t2439.mat');
-%     fullfile(dataDir,'image_exports/25B/thermCubeAnalysis/thermStats_2020-10-26_z710_x571_t1289.mat');
-%              };
-%          
-% tracks = [1 9 20]; %[1 9 20];
-% 
-% writeOFile = true;
-%     oFile = '~/Kahuna/data/sabancaya_5_2018/pulseTrack_analysis/imgTracks_%itracks_%s.mat';
 
 %%
     fprintf('\n========= Reconstruct Track Images and Profiles =========\n')

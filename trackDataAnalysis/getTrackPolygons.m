@@ -24,9 +24,6 @@ if ischar(eventMasks)
     load(eventMasks)
 end
 
-% thermDir = '~/Kahuna/data/sabancaya_5_2018/';
-% maskFile = fullfile(thermDir,'pulseTrack_analysis/allMasks_3events.mat');
-% load(maskFile)
 
 maskThresh = 1;
 
@@ -40,7 +37,6 @@ for ti = 1:length(tk)
     cmask0 = false(eventMasks(ei).size([1 2]));
     cmaskAll = false([eventMasks(ei).size([1 2]) nf]);
     
-%     trackPoly = cell(nf,1);
     for ii = nf:-1:1
         [~,~,pPoly(ii)] = getROI(eventMasks(ei).M(:,:,tk(ti).tI(ii)),'maxRegions',1);
         cmask = cmask0;

@@ -1,5 +1,5 @@
-function [S] = pickVelocities(T,mask,W,U,x,z,param)
-% [Vo,To,pixIdx,Vmu,roi] = pickVelocities(T,W,mask,U,x,z,varargin)
+function [S] = getCluster(T,mask,W,U,x,z,param)
+% [Vo,To,pixIdx,Vmu,roi] = getCluster(T,W,mask,U,x,z,varargin)
 % REQUIRED:
 %       T           = single thermal image frame
 %       mask        = single plume mask frame
@@ -9,8 +9,10 @@ function [S] = pickVelocities(T,mask,W,U,x,z,param)
 %       U           = horizontal velocity frame from thermOpticFlow
 %       x           = x position vector
 %       z           = z position vector
-%       param       = parsed pulseTrack input struct - See
+%       param       = parsed pulseTrack input struct - SEE
 %                   'loadPulseTrackInput.m'
+%
+%   !!!! GO TO loadPulseTrackInput.m for all input params! !!!
 %
 %   For any above optional arguments left blank, they are assumed empty 
 %   and given zero weight for clustering.
@@ -23,63 +25,8 @@ function [S] = pickVelocities(T,mask,W,U,x,z,param)
 %
 % C Rowell March 2020
 
-
-
 %%
-
-    % Default tracking parameters - go here or in pickVelocities?
-%     defU            = zeros(size(T));
-%     defx            = 1:size(T,2);
-%     defz            = 1:size(T,1);
-%     % defTrackStart   = 1;
-%     % defTrackHeight  = [];
-%     defzI           = []; % Default to plume width? 1/2 plume width?
-%     defPrior        = [];
-%     defTprc         = 70;
-%     defLambda         = 0.1; % Regularization parameter
-% 
-%                            
-%     % Weights
-%     % A = cluster area, D = prior cluster distance
-%     %                      X   Z   T   U   W    Area Dist-to-prior
-% %   defVarPick        = [  1   2   3   4   5];
-%     defclusterWeights = [0.5 0.5 1.5   1   2];  % Cluster variable weights - DEPRECATING THIS
-% %     defPriorWeights   = [NaN NaN   1 NaN 1.5    0.5];%  1];  % Tracked cluster selection
-% %                         T   W   D   A
-%     defPriorWeights   = [ 0.5   0.25   2   0.5];  % Tracked cluster selection
-%     defclusterMode    = 'eig';
-% 
-%     % Additional parameters not currently included as input options
-%                            % (dynamically adjusts Tprc if necessary)
-%     defMinClust     = 3;  % Minimum number of clusters to allow/test
-% 
-%     
-%     p = inputParser;
-%     % addRequired(p,'T')
-%     % addRequired(p,'W')
-%     % addRequired(p,'mask')
-%     % addOptional(p,'U',defU)
-%     % addOptional(p,'x',defx)
-%     % addOptional(p,'z',defz)
-%     % addParameter(p,'trackWindowStart',defTrackStart)
-%     % addParameter(p,'trackWindowHeight',defTrackHeight)
-%     addParameter(p,'zI',defzI)
-%     addParameter(p,'Tpercentile',defTprc)
-%     addParameter(p,'lambda',defLambda)
-% %     addParameter(p,'VarPick',defVarPick) % SHOULD be redundant with clusterWeights
-%     addParameter(p,'clusterWeights',defclusterWeights)
-%     addParameter(p,'PriorWeights',defPriorWeights)
-%     addParameter(p,'clusterMode',defclusterMode)
-%     addParameter(p,'prior',defPrior)
-%     addParameter(p,'maxClust',defMaxClust)
-%     addParameter(p,'minClust',defMinClust)    
-%     parse(p,varargin{:})
-% 
-%     param = p.Results;
-
-%     defMaxClust     = 15; % Maximum number of clusters to allow/test
     defMaxClust     = param.maxClust+1;
-%%
 % narginchk(3,5)
     if nargin<7
         param = loadPulseTrackInput;
@@ -90,8 +37,6 @@ function [S] = pickVelocities(T,mask,W,U,x,z,param)
     assert(all(size(mask)==size(T)))
     if any(U(:))
         assert(all(size(U)==size(T)))
-%     else
-%         clusterWeight(4) = NaN;
     end
     assert(length(x)==size(T,2))
     assert(length(z)==size(T,1))
@@ -103,31 +48,16 @@ function [S] = pickVelocities(T,mask,W,U,x,z,param)
     end
     if isempty(param.zI)
         param.zI = [1; round(sum(mask(1,:))*0.5)]; % Defaults to 1/2 mask width at base
-%     else
-%         param.zI = param.zI(~isnan(param.zI));
     end
     if isempty(param.prior)
         % Default prior mask is default detection window
-%         [~,param.prior.mask] = getROI(mask,'iLims',param.zI(round(end/2):end),'maxRegions',1);
         [~,param.prior.mask] = getROI(mask,'iLims',[param.detectWindow(1) sum(param.detectWindow)-1],'maxRegions',1);
         
-%     else
-%         prior = param.prior;
     end
     
-    % Early condition for limiting change in # clusters
-%     if isfield(param.prior,'Nclust') % Overwrite where prior is present
-%         param.maxClust = min([param.maxClust param.prior.Nclust+2]);
-%         param.minClust = max([param.minClust param.prior.Nclust-1]);
-% %     else
-% %         param.maxClust = defMaxClust;
-% %         param.minClust = defMinClust;
-%     end
+
 %% Set up data array and tracking window
     % zI,detHeight,detOffset,Tprc,Gprc
-    % zI = [param.trackWindowStart:param.trackWindowStart+param.trackWindowHeight-1]';
-    % winHeight = param.detectionWindowHeight;
-    % detOffset = param.detectionWindowOffset;
     
     Tprc = param.Tpercentile;
     [X,Z] = meshgrid(x,z);
@@ -138,7 +68,6 @@ function [S] = pickVelocities(T,mask,W,U,x,z,param)
     maxPx  = sum(winMask(:)); % Max # of pixels in plume mask
     if param.minPx<maxPx
         Tcut   = prctile(T(winMask(:)),Tprc); % Temperature threshold
-%         keepI  = T(winMask(:))>=Tcut;
         keepI = and(T>=Tcut,winMask); % Pixel selection mask
         nPx    = sum(keepI(:)); % Number of pixels after cutting
         while nPx<param.minPx
@@ -182,7 +111,6 @@ function [S] = pickVelocities(T,mask,W,U,x,z,param)
 %% Data Selection and Standardization
   %-> Set up quick functions
     % Demean and normalize by standard deviation
-%     mynorm = @(x) (x-mean(x,1))./std(x-mean(x,1),[],1); 
 
     % F'n to temove nan-weighted variables, apply non-nan weights
     DatSelect = @(x,weight) x(:,~isnan(weight)).*weight(~isnan(weight));
@@ -190,7 +118,6 @@ function [S] = pickVelocities(T,mask,W,U,x,z,param)
     % Normalize
     S.DatMean = mean(rawDAT,1);
     S.DatStd  = std(rawDAT-S.DatMean,[],1);
-%     DAT = mynorm(rawDAT);
     DAT = (rawDAT-S.DatMean)./S.DatStd;
     
 %% Run clustering
@@ -252,7 +179,6 @@ function [S] = pickVelocities(T,mask,W,U,x,z,param)
                         else
                             Sset(cc) = getTrackedCluster(Sset(cc),rawDAT,winMask,imgIdx,param);
                         end
-        %                 Sfull.CL(:,cc) = Scc.CL==Scc.trackedCluster;
                     end
                     Sfull    = assembleMultiCluster(Sset);
 
@@ -288,7 +214,6 @@ function [S] = pickVelocities(T,mask,W,U,x,z,param)
                         else
                             Sset(cc) = getTrackedCluster(Sset(cc),rawDAT,winMask,imgIdx,param);
                         end
-        %                 Sfull.CL(:,cc) = Scc.CL==Scc.trackedCluster;
                     end
                     Sfull    = assembleMultiCluster(Sset);
 
@@ -305,32 +230,10 @@ function [S] = pickVelocities(T,mask,W,U,x,z,param)
             
             % Warp cluster
             S = restrictivePriorWarp(S,winMask,imgIdx,param);
-%             S.regionAvgs(S.trackedCluster,:) = mean(DAT(S.regionDatIdx{S.trackedCluster},:));
             S.regionAvgs(S.trackedCluster,:) = mean([X(S.trackedIdx) Z(S.trackedIdx)...
                     T(S.trackedIdx) U(S.trackedIdx) W(S.trackedIdx)],1);
-            % -> Condition to re-iterate if difference is too large?
     end
     
-    % Plot Temperature histograms for testing Tprc limits
-%     if isfield(param.prior,'Trange')
-% %         disp('check prior Trange')
-%         edges = min(T(mask)):max(T(mask));
-%         figure(2)
-%         clf
-%         histogram(T(mask),edges)
-%         hold on
-%         histogram(T(winMask),edges)
-%         histogram(T(S.trackedIdx),edges)
-%         set(gca,'YScale','log')
-%         yl = ylim;
-%         if exist('Tcut_hi','var')
-%             plot([Tcut Tcut_hi].*[1; 1],(yl.*[1;1])','--r')
-%         else
-%             plot(Tcut*[1 1],yl,'--r')
-%         end
-%         plot(param.prior.Trange.*[1;1],(yl.*[1;1])','--k');
-%         legend('plume','window','cluster',sprintf('Tcut_{%.0f}',Tprc),'prior 5-95')
-%     end
     
 end
 
@@ -365,13 +268,9 @@ function S= getTrackedCluster(S,DAT,winMask,idxList,param) %?
         [~,S.regionDatIdx{jj}] = ismember(S.conncomp(jj).PixelIdxList{kk},idxList);
         S.regionAvgs(jj,:) = mean(DAT(S.regionDatIdx{jj},:),1);
         
-%         S.Tsum(jj) = sum(DAT(S.regionDatIdx{jj},3));
         
 
     end
-% elseif and(islogical(S.CL),size(S.CL,3)==S.NclustCalc)
-%     
-% end
 
     % OBJECTIVE FUNCTION HERE
     objFun = getObjectiveFun(S,winMask,param);
@@ -435,19 +334,15 @@ function objFun = getObjectiveFun(S,winMask,param)
     bdtop = sort(bd(:),'descend');
 
    % TERM 1: CURRENT CLUSTER PARAMETERS
-%     Cprod = prod([S.regionAvgs S.clusterLargestRegion'].*S.PriorWeights,2,'omitnan');
     Cprod = prod([abs(S.regionAvgs(:,[3 5])) S.clusterLargestRegion'],2,'omitnan');
     objFun.Cscore = 1 - Cprod./max(Cprod);
     
     % TERM 2: PRIOR CLUSTER FIT
-%     S.Pvec = zeros(S.NclustCalc,3); % Temp, V_z, Distance
     objFun.Pvec = zeros(S.NclustCalc,4); % Add Area
     
     if isfield(param.prior,'Tsum')
         % Temperatarure measure (summed T) - incorporates Area information
-%         S.Pvec(:,1) = (cell2mat(cellfun(@(x) sum(DAT(x,3)), S.regionDatIdx, 'UniformOutput', false))'-param.prior.Tsum)./param.prior.Tsum;
         objFun.Pvec(:,1) = abs(S.regionAvgs(:,3).*S.clusterLargestRegion' - param.prior.Tsum)./param.prior.Tsum;
-%     end
     elseif isfield(param.prior,'Tbar')
         % ALT (mean T):
         objFun.Pvec(:,1) = abs(S.regionAvgs(:,3)-param.prior.Tbar)'./param.prior.Tbar; %S.DatStd(3) - param.prior.Tbar;
@@ -455,7 +350,6 @@ function objFun = getObjectiveFun(S,winMask,param)
     
     if isfield(param.prior,'Wbar')    
         % Velocity measure (mean W)
-%         S.Pvec(:,2) = (S.regionAvgs(:,5)-S.DatMean(5))./S.DatStd(5) - param.prior.Wbar;
         objFun.Pvec(:,2) = abs((S.regionAvgs(:,5) - param.prior.Wbar)./param.prior.Wbar);
     end
     
@@ -469,19 +363,14 @@ function objFun = getObjectiveFun(S,winMask,param)
             Dsum_maxes(jj) = sum(bdtop(1:S.clusterLargestRegion(jj))) ;
         end
         
-        %--- Possible distance normalizations -> need to test and choose ----
-%         Dnorm = Dsum_maxes; % Divide by max possible for each cluster
-%         Dnorm = bdtop(1:sum(param.prior.mask(:))); % Divide by max for equivalent area of param.prior cluster
-%         Dnorm = max(Dsum(:)); % Max of current summed distances
-%         Dnorm =
+        %--- Distance normalization ----
         Dnorm = S.clusterLargestRegion'*param.pxTol; %param.uTol.*param.uMax./param.uGrid;
-        % --------------------------------------------------
+        % -------------------------------
         objFun.Pvec(:,3) = Dsum./Dnorm;
     end
     
     if isfield(param.prior,'Area')
         
-%         objFun.Pvec(:,4) = abs(S.clusterLargestRegion'-param.prior.Area)./param.prior.Area; % Normalize to prior area
         objFun.Pvec(:,4) = abs(S.clusterLargestRegion'-param.prior.Area)./sum(bd<param.pxTol & winMask & ~param.prior.mask,[1 2]); % Normalize to a uMax-based area change
     end
 
@@ -592,34 +481,4 @@ S.trackedIdx = find(clusterMask);
 S.clusterLargestRegion(S.trackedCluster) = length(S.trackedIdx);
 
 end
-%%
-%     param.minPx = 50;
-%     nPx = 55;
-%     while nPx<param.minPx
-%         nPx = nPx+5;
-%         fprintf('%i\n',nPx)
-%     end
-    %% Set up tracking window
-    
-    % Retired the orignal tracking window, now just using the full window
-    % plus spectral clustering
-%     trackI1 = (param.zI(1) + detOffset);
-%     nTZ = winHeight;
-%     trackI = (trackI1:trackI1+nTZ-1)';
-    
-
-    
-    % Check main window against mask in case plume top is lower than
-    % window top (adjust tracking window as necessary)
-%     noMask = find(any(mask(param.zI,:),2));
-%         noMask=find(~maskExists);
-%     if or(roi(1)~=trackI(1),roi(2)~=trackI(end))
-%         areas = bwconncomp(noMask);
-%         numPix = cellfun(@numel,areas.PixelIdxList);
-%         [~,Aidx] = max(numPix);
-%             V(kk).zI(:,jj) = param.zI(areas.PixelIdxList{Aidx}); 
-        % Adjust tracking window to top of main window
-%         trackI = (param.zI(end)-(detHeight-1):param.zI(end))';
-%         trackI = roi(1):roi(2);
-%     end
         

@@ -101,67 +101,6 @@ function B = findB(B,z0,r0,z0ci,T0err,cErr)
 %     conf = [confint(B.pfit{1}); confint(B.pfit{3})];
     B.Bpl = [nanmin(conf(1:2,2)) B.pfit{2}.b nanmax(conf(3:4,2))];
     
-%% %%%  % Deprecating extra fit methods, they do not perform well %%%%%%%%%
-%    % ---- LINEAR FIT MODEL IN LOG-LOG SPACE. LOW CONFIDENCE! ----
-%     B.logT = log10(T);
-%     B.logZ = log10(z); %(z-z0)./r0);
-%     B.dlogT_dz = gradient(B.logT, B.logZ);
-% 
-%      % REMOVE EXTREME VALUES and get gradient PDF 
-%     B.dlogT_dz(B.dlogT_dz>0) = NaN;
-%     B.dlogT_dz(B.dlogT_dz<-5) = NaN;
-%     B.dTpdf    = ksdensity(B.dlogT_dz,ksdT);
-%     [~,ksMaxI]          = max(B.dTpdf);
-%     B.dTmode   = ksdT(ksMaxI);  
-%     
-%     B.Tmdl = fitlm(B.logZ,B.logT,'linear','RobustOpts','on');
-%     B.Blm(2) = B.Tmdl.Coefficients.Estimate(2);
-%     
-%     % B error bounds: LO
-%     if ~isnan(z0ci(1))
-%         logZ = log10(normZ(B.z,z0ci(1),r0));
-%         Tmdl = fitlm(logZ,B.logT,'linear','RobustOpts','on');
-%         Bci = coefCI(Tmdl,.01);
-%         B.Blm(1) = min(Bci(2,:));
-%     else
-%         B.Blm(1) = NaN;
-%     end
-%     
-%     % B error bounds: HI
-%     if ~isnan(z0ci(2))
-%         logZ = log10(normZ(B.z,z0ci(2),r0));
-%         Tmdl = fitlm(logZ,B.logT,'linear','RobustOpts','on');
-%         Bci = coefCI(Tmdl,.01);
-%         B.Blm(3) = max(Bci(2,:));
-%     else
-%         B.Blm(3) = NaN;
-%     end
-%    
-%    % ------------------------------------------------------------
-%
-%     % ---- FMINSEARCH METHOD: MINIMIZE LINEAR ERROR FOR NORMALIZED T vs z^B ----
-%     % - ALSO LOW CONFIDENCE! - better than lin-log fit though
-%     normfun = @(x) (x-min(x))./range(x); % Normalization
-%     
-%     % Fminsearch method, find B, fixed z0 w/ lo/hi bounds
-% %     funner = @(x) rms(T-((B.z-z0).^x./max((B.z-z0).^x)));
-%     funner = @(x) rms(normfun(B.T)-normfun((B.z-z0ci(1)).^x));
-%     B.BfSrch1(1) = fminsearch(funner,B.Blm(2));
-%     B.BfSrch1_rms(1) = funner(B.BfSrch1(1));
-%     
-%     funner = @(x) rms(normfun(B.T)-normfun((B.z-z0).^x));
-%     B.BfSrch1(2) = fminsearch(funner,B.Blm(2));
-%     B.BfSrch1_rms(2) = funner(B.BfSrch1(2));
-%     
-%     funner = @(x) rms(normfun(B.T)-normfun((B.z-z0ci(2)).^x));
-%     B.BfSrch1(3) = fminsearch(funner,B.Blm(2));
-%     B.BfSrch1_rms(3) = funner(B.BfSrch1(3));
-%     
-%     [B.BfSrch1,bi] = sort(B.BfSrch1);
-%     B.BfSrch1_rms = B.BfSrch1_rms(bi);
-%   
-%%%%%%%  % ------------------------------------------------------------
-
 end
 
 % Power law fit function
