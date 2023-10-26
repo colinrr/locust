@@ -61,18 +61,18 @@ T - included and ready for use, demo data not available
 x - not currently included
 
 
-| x | (1) | Irbis to Matlab data conversion
-| x | (2) | Image registration (stabilization)
-| x | (3) | Image projection mapping
-| x | (4) | Plume masking (modified from plumeTracker, Bombrun et al., 2018) Ω
-| Y | (5.1) | Re-gridding image frames (x,z)
-| Y | (5.2) | Re-sample gridded frames 3D data cube, regularly spaced in time
-| T | (6) | Atmospheric profile fitting and removal
-| ! | (7) | Get 2D velocity fields with Optical Flow Analysis
-| x | (8) | Column source time-series retrieval
-| x | (9) | Create time-averaged images
-| Y | (10) | Feature tracking
-| Y | (11) | Virtual source estimation and power-law fitting
+| x | (1) | Irbis to Matlab data conversion |
+| x | (2) | Image registration (stabilization) |
+| x | (3) | Image projection mapping |
+| x | (4) | Plume masking (modified from plumeTracker, Bombrun et al., 2018) |
+| Y | (5.1) | Re-gridding image frames (x,z) |
+| Y | (5.2) | Re-sample gridded frames 3D data cube, regularly spaced in time |
+| T | (6) | Atmospheric profile fitting and removal |
+| ! | (7) | Get 2D velocity fields with Optical Flow Analysis |
+| x | (8) | Column source time-series retrieval |
+| x | (9) | Create time-averaged images |
+| Y | (10) | Feature tracking |
+| Y | (11) | Virtual source estimation and power-law fitting |
 
 
 ### > DIRECTORY STRUCTURE
