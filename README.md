@@ -55,10 +55,10 @@ Main dataset for the manuscript at: https://doi.org/10.6084/m9.figshare.21936582
 ### > WHAT'S INCLUDED SO FAR
 
 
-Y - fully included and ready for use, test data included in demoData
-T - included and ready for use, demo data not available
-! - available, subject to dependencies
-x - not currently included
+Y - fully included and ready for use, test data included in demoData <\br>
+T - included and ready for use, demo data not available <\br>
+! - available, subject to dependencies <\br>
+x - not currently included <\br>
 
 | Status | Step | Description |
 | --- | --- | --- |
@@ -78,10 +78,10 @@ x - not currently included
 
 ### > DIRECTORY STRUCTURE
 
-sabancayaScripts/
-	Contains project input/control scripts and various calculations specific to the manuscript. 
-		- "project" files are useful references for all workflow input/output. 
-		- "structureTracking" files contain input parameters used for all tracked column structures as part of the manuscript. Subsets of these are highlighted that apply to provided test data sets
+**sabancayaScripts/**
+Contains project input/control scripts and various calculations specific to the manuscript. 
+- "project" files are useful references for all workflow input/output. 
+- "structureTracking" files contain input parameters used for all tracked column structures as part of the manuscript. Subsets of these are highlighted that apply to provided test data sets
 
 thermImagePreprocessing/
 	Core functions for all workflow steps (1)-(7)
