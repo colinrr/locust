@@ -60,7 +60,8 @@ T - included and ready for use, demo data not available
 ! - available, subject to dependencies
 x - not currently included
 
-
+| Status | Step | Description |
+| --- | --- | --- |
 | x | (1) | Irbis to Matlab data conversion |
 | x | (2) | Image registration (stabilization) |
 | x | (3) | Image projection mapping |
