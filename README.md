@@ -11,16 +11,19 @@ This repository contains only a subset of all scripts and function used in the a
 
 If you have any questions, or are interested in additional components of the workflow, please don't hesitate to reach out to the corresponding authors, Dr. Colin Rowell and Prof. Mark Jellinek, at the University of British Columbia.
 
-
+---
+## CONTENTS
+---
 =============== CONTENTS ===============
-	(1) DATA AVAILABILITY, DATA AND CODE DEPENDENCIES
-	(2) GETTING STARTED
-	(3)	SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS (what's included, directory structure)
-	(4)	Notes for using the feature tracking algorithm
-	(coming)  Short descriptions of core functions
+ - (1) DATA AVAILABILITY, DATA AND CODE DEPENDENCIES
+ - (2) GETTING STARTED
+ - (3)	SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS (what's included, directory structure)
+ - (4)	Notes for using the feature tracking algorithm
+ - (coming)  Short descriptions of core functions
 
-
-============== (1) DATA AVAILABILITY, DATA AND CODE DEPENDENCIES ==============
+---
+## (1) DATA AVAILABILITY, DATA AND CODE DEPENDENCIES
+---
 
 Curated demo data:
 	The demo dataset can be found at:
@@ -36,7 +39,9 @@ Curated demo data:
 
 Main dataset for the manuscript at: https://doi.org/10.6084/m9.figshare.21936582
 
-============== (2) GETTING STARTED ==============
+---
+## (2) GETTING STARTED
+---
 
 (1) Before running anything, you'll want to open the script 'setHomeDir.m', and set the code and directories to whichever absolute or relative paths you like.
 
@@ -44,8 +49,10 @@ Main dataset for the manuscript at: https://doi.org/10.6084/m9.figshare.21936582
 
 (3) Some of the workflow steps can be run immediately using the demo data provided (see DATA AVAILABILITY above). Demo data workflow currently starts at Re-gridding (see step 5.1 in the workflow below), so gridded frame files are not included in the demo data. There is however:sample temperature and velocity data cubes (output of steps 5.2 through 7) that can be used to demo run any workflow steps from 8 onwards. Compiled tracking output used for final data analysis is also available.
 
-=============== (3) SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS ===============
---> WHAT'S INCLUDED SO FAR
+---
+## (3) SUMMARY OF FULL WORKFLOW AND MAJOR FUNCTIONS
+---
+### > WHAT'S INCLUDED SO FAR
 
 
 Y - fully included and ready for use, test data included in demoData
@@ -53,20 +60,22 @@ T - included and ready for use, demo data not available
 ! - available, subject to dependencies
 x - not currently included
 
-x	(1) 	Irbis to Matlab data conversion
-x	(2) 	Image registration (stabilization)
-x	(3) 	Image projection mapping
-x	(4) 	Plume masking (modified from plumeTracker, Bombrun et al., 2018)
-Y	(5.1) 	Re-gridding image frames (x,z)
-Y 	(5.2) 	Re-sample gridded frames 3D data cube, regularly spaced in time
-T 	(6) 	Atmospheric profile fitting and removal
-! 	(7) 	Get 2D velocity fields with Optical Flow Analysis
-x 	(8) 	Column source time-series retrieval
-x 	(9) 	Create time-averaged images
-Y 	(10) 	Feature tracking
-Y 	(11) 	Virtual source estimation and power-law fitting
 
---> DIRECTORY STRUCTURE
+| x | (1) | Irbis to Matlab data conversion
+| x | (2) | Image registration (stabilization)
+| x | (3) | Image projection mapping
+| x | (4) | Plume masking (modified from plumeTracker, Bombrun et al., 2018) Ω
+| Y | (5.1) | Re-gridding image frames (x,z)
+| Y | (5.2) | Re-sample gridded frames 3D data cube, regularly spaced in time
+| T | (6) | Atmospheric profile fitting and removal
+| ! | (7) | Get 2D velocity fields with Optical Flow Analysis
+| x | (8) | Column source time-series retrieval
+| x | (9) | Create time-averaged images
+| Y | (10) | Feature tracking
+| Y | (11) | Virtual source estimation and power-law fitting
+
+
+### > DIRECTORY STRUCTURE
 
 sabancayaScripts/
 	Contains project input/control scripts and various calculations specific to the manuscript. 
@@ -98,7 +107,9 @@ utils/
 plot-tools/
    Various functions for plotting processing outputs
 
-=============== NOTES FOR USING PULSETRACKER ALGORITHM ===============
+---
+## NOTES FOR USING PULSETRACKER ALGORITHM
+---
 
 Parameters 'memoryN' and 'uMax' are automatically calculated (and reported in command line output) when running pulseTracker, but the process is somewhat slow. If running the tracker repeatedly to test tracks, it is best to specify these two values as input after their initial calculation in order skip calculation time in succeeding runs.
 
