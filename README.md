@@ -25,19 +25,19 @@ If you have any questions, or are interested in additional components of the wor
 ## (1) DATA AVAILABILITY, DATA AND CODE DEPENDENCIES
 ---
 
-Curated demo data:
-	The demo dataset can be found at:
-		'https:'
-	It contains sample data that can be used as input for several of the key workflow steps, as given below. 
-	NOTE: Because file sizes are large, the demo dataset contains a small subset of data for a single volcanic event only, which is Event 3 of the main manuscript. The main data set listed below contains processed brightness temperature and velocity data cubes for all 3 of the events analysed in the main manuscript.
+Curated demo data:  
+ - The demo dataset can be found on [Figshare](10.6084/m9.figshare.24446086).
+ - It contains sample data that can be used as input for several of the key workflow steps, as given below. 
+ - NOTE: Because file sizes are large, the demo dataset contains a small subset of data for a single volcanic event only, which is Event 3 of the main manuscript. The main data set listed below contains processed brightness temperature and velocity data cubes for all 3 of the events analysed in the main manuscript. Please contact the corresponding authors for access to additional data.
 
-	SAMPLE_DATA 		HAS_INPUT_FOR_WORKFLOW_STEPS
-	event3/reg-mat/		5.1
-	event3/interp-mat/  5.2
-	event3/thermCube/   6 - 10
-	pulseTrackAnalysis/ 11
+| SAMPLE_DATA | HAS_INPUT_FOR_WORKFLOW_STEPS |
+| --- | --- | 
+| event3/reg-mat/ | 5.1 |
+| event3/interp-mat/ | 5.2 |
+| event3/thermCube/  | 6 - 10 |
+| pulseTrackAnalysis/ | 11 |
 
-Main dataset for the manuscript at: https://doi.org/10.6084/m9.figshare.21936582
+The **full** dataset for the manuscript is hosted at at: https://doi.org/10.6084/m9.figshare.21936582
 
 ---
 ## (2) GETTING STARTED
@@ -55,10 +55,10 @@ Main dataset for the manuscript at: https://doi.org/10.6084/m9.figshare.21936582
 ### > WHAT'S INCLUDED SO FAR
 
 
-Y - fully included and ready for use, test data included in demoData <\br>
-T - included and ready for use, demo data not available <\br>
-! - available, subject to dependencies <\br>
-x - not currently included <\br>
+Y - fully included and ready for use, test data included in demoData  
+T - included and ready for use, demo data not available  
+! - available, subject to dependencies  
+x - not currently included  
 
 | Status | Step | Description |
 | --- | --- | --- |
@@ -83,30 +83,30 @@ Contains project input/control scripts and various calculations specific to the 
 - "project" files are useful references for all workflow input/output. 
 - "structureTracking" files contain input parameters used for all tracked column structures as part of the manuscript. Subsets of these are highlighted that apply to provided test data sets
 
-thermImagePreprocessing/
-	Core functions for all workflow steps (1)-(7)
-		interpThermal.m 		Re-grid thermal images using pixel projection
-		getThermCube.m 			Build 3D image data cube
-		thermOpticFlow20.m 		Run optical flow analysis, requires Sun et al., (2014) toolbox
-		filterVelocities.m 		Apply low pass filter to velocity fields for time-smoothing
-		getAtmoProfile.m    	Retrieve atmo profile from satellite .hdf files
-		fitAtmoProfile.m    	Estimate parameter fits and produce an atmospheric profile for applying to thermal cube data
-		removeAtmoProfile.m 	Get Delta T from T_b thermal cube
+**thermImagePreprocessing/**  
+Core functions for all workflow steps (1)-(7)
+ - interpThermal.m 		Re-grid thermal images using pixel projection
+ - getThermCube.m 			Build 3D image data cube
+ - thermOpticFlow20.m 		Run optical flow analysis, requires Sun et al., (2014) toolbox
+ - filterVelocities.m 		Apply low pass filter to velocity fields for time-smoothing
+ - getAtmoProfile.m    	Retrieve atmo profile from satellite .hdf files
+ - fitAtmoProfile.m    	Estimate parameter fits and produce an atmospheric profile for applying to thermal cube data
+ - removeAtmoProfile.m 	Get Delta T from T_b thermal cube
 
-featureTracking/
-	Core functions of the feature tracking algorithm and source time-series retrieval.
-		trackStructure.m 		Main function for running a single structure track
-		loadPulseTrackInput.m  	Input parameter parsing for structure tracking
-		getCluster.m 			The core clustering function, which performs tracking at each time step
+**featureTracking/**  
+Core functions of the feature tracking algorithm and source time-series retrieval.
+ - trackStructure.m 		Main function for running a single structure track
+ - loadPulseTrackInput.m  	Input parameter parsing for structure tracking
+ - getCluster.m 			The core clustering function, which performs tracking at each time step
 
-trackDataAnalysis/
-	Scripts for analysis of tracked structures
+**trackDataAnalysis/**  
+Scripts for analysis of tracked structures
 
-utils/
-	A collection of useful sub-functions
+**utils/**  
+A collection of useful sub-functions
 
-plot-tools/
-   Various functions for plotting processing outputs
+**plot-tools/**  
+Various functions for plotting processing outputs
 
 ---
 ## NOTES FOR USING PULSETRACKER ALGORITHM
@@ -116,19 +116,19 @@ Parameters 'memoryN' and 'uMax' are automatically calculated (and reported in co
 
 COMMON ISSUES WITH Structure Tracking
 
-The tracked cluster grows too large to encompass more than the feature of interest.
-	-> Try increasing any of 'Tpercentile', 'minClust','maxClust', or slightly reducing 'uTol','winSzRatio'
+The tracked cluster grows too large to encompass more than the feature of interest.  
+  -> Try increasing any of 'Tpercentile', 'minClust','maxClust', or slightly reducing 'uTol','winSzRatio'  
 
-The tracked cluster shrinks or is too small to cover the feature of interest
-	-> Try decreasing any of 'Tpercentile', 'minClust','maxClust', or slightly increasing 'uTol','winSzRatio'
+The tracked cluster shrinks or is too small to cover the feature of interest  
+  -> Try decreasing any of 'Tpercentile', 'minClust','maxClust', or slightly increasing 'uTol','winSzRatio'  
 
-The tracked cluster wanders off the feature of interest to track something else.
-	-> Try increasing the prior regularization 'lambda'
-	-> Try specifying/changing the initial prior mask to better target the feature of interest
+The tracked cluster wanders off the feature of interest to track something else.  
+  -> Try increasing the prior regularization 'lambda'  
+  -> Try specifying/changing the initial prior mask to better target the feature of interest  
 
-The tracked cluster lags behind the feature of interest, eventually falling off entirely.
-	-> Check/adjust 'uTol' - this is intimately linked with the other internal parameters 'uMax' and 'pxTol' by the relation (pxTol = uMax*uTol*dt/dz), where dt and dz are the frame time step (in seconds) and pixel grid spacing (in meters), respectively. 'pxTol' is always allowed to be at least 1, but 2 is often better.
-    -> Check the above parameters as well!
-    -> Try adjusting the clusterWeights or priorWeights if need be.
-    clusterWeights = [X Z Temp. U W]
-    priorWeights   = [Temp. W Distance Area]
+The tracked cluster lags behind the feature of interest, eventually falling off entirely.  
+  -> Check/adjust 'uTol' - this is intimately linked with the other internal parameters 'uMax' and 'pxTol' by the relation (pxTol = uMax*uTol*dt/dz), where dt and dz are the frame time step (in seconds) and pixel grid spacing (in meters), respectively. 'pxTol' is always allowed to be at least 1, but 2 is often better.  
+  -> Check the above parameters as well!  
+  -> Try adjusting the clusterWeights or priorWeights if need be. 
+    clusterWeights = [X Z Temp. U W]  
+    priorWeights   = [Temp. W Distance Area]  
