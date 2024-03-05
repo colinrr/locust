@@ -3,6 +3,7 @@
 Locally Optimized Clustering for Unsteady Structure Tracking
 
 ![Demo tracking GIF](images/trackingBigBang_downsize.gif)
+
 *Turbulent structure tracking for a large (300 m wide at base) ash plume*
 
 Hi!
