@@ -2,7 +2,9 @@
 
 Locally Optimized Clustering for Unsteady Structure Tracking
 
-![Demo tracking GIF](images/trackingBigBang_downsize.gif "Structure tracking for a large (300 m wide at base) ash plume")
+![Demo tracking GIF](images/trackingBigBang_downsize.gif)
+
+*^ Turbulent structure tracking for a large (300 m wide at base) ash plume*
 
 Hi!
 This repository contains sample and test code for the unsteady feature tracking algorithm associated with the following manuscript:
