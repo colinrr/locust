@@ -51,14 +51,14 @@ flag_timeAverage  = false;   % Get time-averaged plume image and profiles
 
 % ----- Data Cube Workflow: pulseTracker --------
 flag_getSource    = false;   % Run source pulse detection, get source history
-flag_pulseTrack   = true;  % Track detected sources.
+flag_pulseTrack   = false;  % Track detected sources.
 flag_postProcess  = false;  % Apply smoothing and pixel exclusion to tracks
 
 % ---- Analysis ----
 
 
 % ------ pretty pictures --------
-flag_image2dem   = false;   % Project thermal images onto the DEM
+flag_image2dem   = true;   % Project thermal images onto the DEM
 flag_riseDiag    = false;   % Plot rise diagram
 
 %% ========================== DO THE THING ==========================
