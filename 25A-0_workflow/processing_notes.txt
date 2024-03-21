@@ -1,0 +1,37 @@
+25A-0 Saba time series (07:35-07:37 local, May 25 2018)
+
+Processing notes - workflowDriver_25A0.m
+
+1) irb2matDriver: 3 frames believed dropped during conversion. Timestamps 
+are hopefully fixed now, but could be still be out by 1 frame or about 0.1 s.
+
+2) Based on playFrames and regFrameDiff check, registration was not needed
+
+3) mapPixels: easy and straight forward, slight adjustent to reference pixel position
+
+4) Thermal pre-processing and plume tracking. See "preProcWorfklow_25A0.m" for pre-filtering steps.
+ - consider tightening the heaviside filter to kill most things in the 220-232 range if plumeTracking needs improvement
+
+5) Plume tracking via "mainTrackPlume.m" - tolerances likely a bit too loose in the source regions, getting a bit too much background. 
+ - options: either tighter preProc params (say heaviside width of 5?), OR
+ - threshold masks afterwards, then apply a smoother (like in getThermCube)
+
+6) Interptherm and getThermCube - image re-gridding and time re-sampling. Working well mostly.
+ -  Some large jumps in mask area after smoothing in getThermCube - some of the above notes on masking may help
+
+7) getThermSource - skipped opticalFlow
+ - first results are picking up a lot of background. Stuff in the 90th percentile and above might be ok, but still skewed
+ 		- partially because I didn't remove background
+ - EDIT: added the atmospheric profile removal - masks and data retrieval are now much tighter
+
+Thermal source results file: thermSource_25A0_2024-03-20.mat
+ - structure 'S' contains the main data
+ - dTmax and dT95 are the maximum and 95th percentile temperatures in the source window, respectively
+ - added UTC (t_utc), local (t_local), seconds since 00:00 UTC (t_since_00utc) time vectors 
+
+Image data cube is: thermStats_2024-03-19_z709_x618_t1136.mat
+ - structure 'D' contains 3D image cube (.T), time (.t) and spatial vectors (.x,.z), plume masks (.mask), source region mask (.sourceMask), atmospheric profile (.atmo)
+
+ RUN quickPlotResults.m to view the data
+  - update data directory first
+  - plotThermVelocities.m function requires: 'getROI.m', 'plasmagrey.m', 'mask2poly.m', plus maybe some others - so easiest thing is just clone the whole LOCUST repo!

@@ -88,7 +88,7 @@ switch plotmode
         figure('position',[50 50 50+size(F1,2) 50+size(F1,1)])
         pcolor(x1,z1,F1)
         shading flat
-        colormap(thermal(200))
+        colormap(plasmagrey(200))
         
         hold on
         
@@ -113,7 +113,7 @@ switch plotmode
         tightSubplot(1,2,1)
         pcolor(x1,z1,F1)
         shading flat
-        colormap(thermal(200))
+        colormap(plasmagrey(200))
         
 %          if strcmp(plotmode,'mesh')
 %             p2(2) = mesh(x2,z2,x2*0+mean(F1(:)),'EdgeColor',[0.7 0.7 0.7],'FaceColor','None');
@@ -129,7 +129,7 @@ switch plotmode
         tightSubplot(1,2,2)
         pcolor(x2,z2,F2)
         shading flat
-        colormap(thermal(200))
+        colormap(plasmagrey(200))
         
 %          if strcmp(plotmode,'mesh')
 %             p2(2) = mesh(x2,z2,x2*0+mean(F1(:)),'EdgeColor',[0.7 0.7 0.7],'FaceColor','None');

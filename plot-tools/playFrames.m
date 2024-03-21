@@ -70,7 +70,7 @@ for ix = idx
         end
     else
         imagesc(ax,Frame(roi(1):roi(2),roi(3):roi(4)))
-        colormap(thermgray(150))
+        colormap(plasmagrey(150))
         colorbar
         if ~isempty(cax)
             caxis(cax)

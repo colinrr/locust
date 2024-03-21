@@ -159,6 +159,7 @@ else
     useRidx = false;
 end
 
+
 % Assign Z limits - RETRIEVE MANUALLY CHOSEN HEIGHT LIMITS FOR CURVE
 % FITTING DATA
 if opts.useRzLim || opts.useTzLim

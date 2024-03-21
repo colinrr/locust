@@ -66,15 +66,15 @@ x - not currently included
 
 | Status | Step | Description |
 | --- | --- | --- |
-| x | (1) | Irbis to Matlab data conversion |
+| Y | (1) | Irbis to Matlab data conversion |
 | x | (2) | Image registration (stabilization) |
-| x | (3) | Image projection mapping |
-| x | (4) | Plume masking (modified from plumeTracker, Bombrun et al., 2018) |
+| Y | (3) | Image projection mapping |
+| T | (4) | Plume masking (modified from plumeTracker, Bombrun et al., 2018) |
 | Y | (5.1) | Re-gridding image frames (x,z) |
 | Y | (5.2) | Re-sample gridded frames 3D data cube, regularly spaced in time |
 | T | (6) | Atmospheric profile fitting and removal |
 | ! | (7) | Get 2D velocity fields with Optical Flow Analysis |
-| x | (8) | Column source time-series retrieval |
+| Y | (8) | Column source time-series retrieval |
 | x | (9) | Create time-averaged images |
 | Y | (10) | Feature tracking |
 | Y | (11) | Virtual source estimation and power-law fitting |
@@ -96,6 +96,9 @@ Core functions for all workflow steps (1)-(7)
  - getAtmoProfile.m    	Retrieve atmo profile from satellite .hdf files
  - fitAtmoProfile.m    	Estimate parameter fits and produce an atmospheric profile for applying to thermal cube data
  - removeAtmoProfile.m 	Get Delta T from T_b thermal cube
+ - Additional utilities: makeForegroundMask.m, designPolygon.m, applySmoothThreshold.m, maskThermal.m
+ 	- These are useful for creating pre-filtered imagery to use with Plume masking. See preProcWorfklow_25A0.m example.
+
 
 **featureTracking/**  
 Core functions of the feature tracking algorithm and source time-series retrieval.
@@ -110,7 +113,7 @@ Scripts for analysis of tracked structures
 A collection of useful sub-functions
 
 **plot-tools/**  
-Various functions for plotting processing outputs
+Various functions for plotting processing outputs. Example usages can be found in workflow drivers (e.g. workFlowDriver.m, preProcWorfklow_25A0.m, pulseTrackAnalysisDriver.m  )
 
 ---
 ## NOTES FOR USING PULSETRACKER ALGORITHM
