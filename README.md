@@ -11,6 +11,7 @@ This repository contains sample and test code for the unsteady feature tracking 
 
 > Rowell, Colin R., Jellinek, A. Mark, Gilchrist, Johan T., (2023)
 > Tracking eruption column thermal evolution and source unsteadiness in ground-based thermal imagery using spectral-clustering.
+> Geochemistry, Geophysics, Geosystems, 24(11), e2022GC010845. https://doi.org/10.1029/2022GC010845
 
 This repository contains only a subset of all scripts and function used in the above manuscript. The contents focus on essential functions, input, and test data sets for the core elements of the workflow, specifically feature tracking and atmospheric profile removal. Other components of the workflow such as pre-processing will be added as needed and as time allows. The first section below, a summary of the workflow and major functions also includes information on which components of are included here. The next section after that also lists some important data and code dependencies that will be required to run certain elements of the workflow, such as the Optical Flow Analysis Toolbox (Sun et al., 2014) and sample data sets that are too large to include in this repository.
 
