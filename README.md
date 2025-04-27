@@ -32,7 +32,7 @@ If you have any questions, or are interested in additional components of the wor
 ---
 
 Curated demo data:  
- - The demo dataset can be found on [Figshare](10.6084/m9.figshare.24446086).
+ - The demo dataset can be found on Figshare: [https://doi.org/10.6084/m9.figshare.24446086.v1](https://doi.org/10.6084/m9.figshare.24446086.v1).
  - It contains sample data that can be used as input for several of the key workflow steps, as given below. 
  - NOTE: Because file sizes are large, the demo dataset contains a small subset of data for a single volcanic event only, which is Event 3 of the main manuscript. The main data set listed below contains processed brightness temperature and velocity data cubes for all 3 of the events analysed in the main manuscript. Please contact the corresponding authors for access to additional data.
 
