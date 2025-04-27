@@ -45,7 +45,7 @@ Curated demo data:
 
 The **full** dataset for the manuscript is hosted at at: https://doi.org/10.6084/m9.figshare.21936582
 
-The major dependency for the Optical Flow Analysis component is the `ijcv_flow_code` from Sun. et al. 2010: https://cs.brown.edu/people/dqsun/
+The major dependency for the Optical Flow Analysis component is the `ijcv_flow_code` from Sun. et al. 2010/2014: https://cs.brown.edu/people/dqsun/
 
 ---
 ## (2) GETTING STARTED
